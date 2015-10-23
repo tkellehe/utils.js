@@ -1,0 +1,728 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <meta name="viewport" content="width=device-width">
+  <link rel="shortcut icon" href="../images/iterjs_icon.png" />
+  <title>iter.js</title>
+  <script src="iter.min.js"></script>
+  
+  <style>
+    body {
+      font-size: 14px;
+      line-height: 22px;
+      font-family: Helvetica Neue, Helvetica, Arial;
+      background: #f4f4f4 url(../images/background.png);
+    }
+    .interface {
+      font-family: "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, sans-serif !important;
+    }
+    div#sidebar {
+      background: #fff;
+      position: fixed;
+      z-index: 10;
+      top: 0; left: 0; bottom: 0;
+      width: 200px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 15px 0 30px 30px;
+      border-right: 1px solid #bbb;
+      box-shadow: 0 0 20px #ccc; -webkit-box-shadow: 0 0 20px #ccc; -moz-box-shadow: 0 0 20px #ccc;
+    }
+      a.toc_title, a.toc_title:visited {
+        display: block;
+        color: black;
+        font-weight: bold;
+        margin-top: 15px;
+      }
+        a.toc_title:hover {
+          text-decoration: underline;
+        }
+        #sidebar .version {
+          font-size: 10px;
+          font-weight: normal;
+        }
+      ul.toc_section {
+        font-size: 11px;
+        line-height: 14px;
+        margin: 5px 0 0 0;
+        padding-left: 0px;
+        list-style-type: none;
+        font-family: "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, sans-serif;
+      }
+        .toc_section li {
+          cursor: pointer;
+          margin: 0 0 3px 0;
+        }
+          .toc_section li a {
+            text-decoration: none;
+            color: black;
+          }
+            .toc_section li a:hover {
+              text-decoration: underline;
+            }
+    div.container {
+      position: relative;
+      width: 550px;
+      margin: 40px 0 50px 260px;
+    }
+    img#logo {
+      width: 450px;
+      height: 80px;
+    }
+    p, div.container ul {
+      margin: 25px 0;
+      width: 550px;
+    }
+      p.warning {
+        font-size: 12px;
+        line-height: 18px;
+        font-style: italic;
+      }
+      div.container ul {
+        list-style: circle;
+        padding-left: 15px;
+        font-size: 13px;
+        line-height: 18px;
+      }
+        div.container ul li {
+          margin-bottom: 10px;
+        }
+        div.container ul.small {
+          font-size: 12px;
+        }
+    a, a:visited {
+      color: #444;
+    }
+    a:active, a:hover {
+      color: #000;
+    }
+    a.punch {
+      display: inline-block;
+      background: #4162a8;
+      border-top: 1px solid #38538c;
+      border-right: 1px solid #1f2d4d;
+      border-bottom: 1px solid #151e33;
+      border-left: 1px solid #1f2d4d;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      -ms-border-radius: 4px;
+      -o-border-radius: 4px;
+      border-radius: 4px;
+      -webkit-box-shadow: inset 0 1px 10px 1px #5c8bee, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+      -moz-box-shadow: inset 0 1px 10px 1px #5c8bee, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+      -ms-box-shadow: inset 0 1px 10px 1px #5c8bee, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+      -o-box-shadow: inset 0 1px 10px 1px #5c8bee, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+      box-shadow: inset 0 1px 10px 1px #5c8bee, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+      color: #fff;
+      font: bold 14px "helvetica neue", helvetica, arial, sans-serif;
+      line-height: 1;
+      margin-bottom: 15px;
+      padding: 8px 0 10px 0;
+      text-align: center;
+      text-shadow: 0px -1px 1px #1e2d4d;
+      text-decoration: none;
+      width: 225px;
+      -webkit-background-clip: padding-box; }
+      a.punch:hover {
+        -webkit-box-shadow: inset 0 0px 20px 1px #87adff, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+        -moz-box-shadow: inset 0 0px 20px 1px #87adff, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+        -ms-box-shadow: inset 0 0px 20px 1px #87adff, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+        -o-box-shadow: inset 0 0px 20px 1px #87adff, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+        box-shadow: inset 0 0px 20px 1px #87adff, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+        cursor: pointer; }
+      a.punch:active {
+        -webkit-box-shadow: inset 0 1px 10px 1px #5c8bee, 0 1px 0 #1d2c4d, 0 2px 0 #1f3053, 0 4px 3px 0 #111111;
+        -moz-box-shadow: inset 0 1px 10px 1px #5c8bee, 0 1px 0 #1d2c4d, 0 2px 0 #1f3053, 0 4px 3px 0 #111111;
+        -ms-box-shadow: inset 0 1px 10px 1px #5c8bee, 0 1px 0 #1d2c4d, 0 2px 0 #1f3053, 0 4px 3px 0 #111111;
+        -o-box-shadow: inset 0 1px 10px 1px #5c8bee, 0 1px 0 #1d2c4d, 0 2px 0 #1f3053, 0 4px 3px 0 #111111;
+        box-shadow: inset 0 1px 10px 1px #5c8bee, 0 1px 0 #1d2c4d, 0 2px 0 #1f3053, 0 4px 3px 0 #111111;
+        margin-top: 5px; margin-bottom: 10px; }
+    a img {
+      border: 0;
+    }
+    a.travis-badge {
+      display: block;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      padding-top: 20px;
+    }
+      h2 {
+        font-size: 22px;
+      }
+    b.header {
+      font-size: 18px;
+      line-height: 35px;
+    }
+    span.alias {
+      font-size: 14px;
+      font-style: italic;
+      margin-left: 20px;
+    }
+    table {
+      margin: 15px 0 0; padding: 0;
+    }
+      tr, td {
+        margin: 0; padding: 0;
+      }
+        td {
+          padding: 0px 15px 5px 0;
+        }
+        table .rule {
+          height: 1px;
+          background: #ccc;
+          margin: 5px 0;
+        }
+    code, pre, tt {
+      font-family: Monaco, Consolas, "Lucida Console", monospace;
+      font-size: 12px;
+      line-height: 18px;
+      font-style: normal;
+    }
+      tt {
+        padding: 0px 3px;
+        background: #fff;
+        border: 1px solid #ddd;
+        zoom: 1;
+      }
+      code {
+        margin-left: 20px;
+      }
+      pre {
+        font-size: 12px;
+        padding: 2px 0 2px 15px;
+        border: 4px solid #bbb; border-top: 0; border-bottom: 0;
+        margin: 0px 0 25px;
+      }
+      img.example_image {
+        margin: 0px auto;
+      }
+        img.example_retina {
+          margin: 20px;
+          box-shadow: 0 8px 15px rgba(0,0,0,0.4);
+        }
+    @media only screen and (-webkit-max-device-pixel-ratio: 1) and (max-width: 600px),
+           only screen and (max--moz-device-pixel-ratio: 1) and (max-width: 600px) {
+      div#sidebar {
+        display: none;
+      }
+      img#logo {
+        max-width: 450px;
+        width: 100%;
+        height: auto;
+      }
+      div.container {
+        width: auto;
+        margin-left: 15px;
+        margin-right: 15px;
+      }
+        p, div.container ul {
+          width: auto;
+        }
+    }
+    @media only screen and (-webkit-min-device-pixel-ratio: 1.5) and (max-width: 640px),
+          only screen and (-o-min-device-pixel-ratio: 3/2) and (max-width: 640px),
+          only screen and (min-device-pixel-ratio: 1.5) and (max-width: 640px) {
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+      div#sidebar {
+        -webkit-overflow-scrolling: initial;
+        position: relative;
+        width: 90%;
+        height: 120px;
+        left: 0;
+        top: -7px;
+        padding: 10px 0 10px 30px;
+        border: 0;
+      }
+      img#logo {
+        width: auto;
+        height: auto;
+      }
+      div.container {
+        margin: 0;
+        width: 100%;
+      }
+      p, div.container ul {
+        max-width: 98%;
+        overflow-x: scroll;
+      }
+      table {
+        position: relative;
+      }
+        tr:first-child td {
+          padding-bottom: 25px;
+        }
+        td.text {
+          line-height: 12px;
+          padding: 0;
+          position: absolute;
+          left: 0;
+          top: 48px;
+        }
+        tr:last-child td.text {
+          top: 122px;
+        }
+      pre {
+        overflow: scroll;
+      }
+    }
+    img.figure {
+      width: 100%;
+    }
+    div.columns {
+      display: table;
+      table-layout: fixed;
+      width: 100%;
+    }
+      div.columns ul {
+        margin: 10px 0;
+      }
+    div.col-50 {
+      display: table-cell;
+      width: 50%;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="sidebar" class="interface">
+
+    <a class="toc_title" href="#">
+      iter.js <span class="version">(1.0.0)</span>
+    </a>
+    <ul class="toc_section">
+      <li>&raquo; <a href="">GitHub Repository</a></li>
+      <li>&raquo; <a href="#downloads">Downloads</a></li>
+	  <!-- Really cool way of explaining code! -->
+      <!-- <li>&raquo; <a href="">Annotated Source</a></li> -->
+    </ul>
+
+    <a class="toc_title" href="#Getting-started">
+      Getting Started
+    </a>
+    <ul class="toc_section">
+      <li>- <a href="#Getting-started">Introduction</a></li>
+      <li>- <a href="#Getting-started-loading">Loading iter.js</a></li>
+      <li>– <a href="#Getting-started-Stats">Statistics</a></li>
+    </ul>
+	
+    <a class="toc_title" href="#iter">
+      iter
+    </a>
+    <ul class="toc_section">
+	  <li>– <a href="#iter-properties">Property List</a></li>
+      <li>– <a href="#iter-VERSION"><tt>VERSION</tt></a></li>
+      <li>– <a href="#iter-nullptr"><tt>nullptr</tt></a></li>
+    </ul>
+	
+    <a class="toc_title" href="#static_iterator">
+      Static Iterator
+    </a>
+    <ul class="toc_section">
+      <li>– <a href="#static_iterator-properties">Property List</a></li>
+    </ul>
+    <ul class="toc_section">
+      <li>– <a href="#static_iterator-me"><tt>.me</tt></a></li>
+    </ul>
+    <ul class="toc_section">
+      <li>– <a href="#static_iterator-dollar"><tt>.$</tt></a></li>
+    </ul>
+    <ul class="toc_section">
+      <li>– <a href="#static_iterator-scope"><tt>.scope</tt></a></li>
+    </ul>
+    <ul class="toc_section">
+      <li>– <a href="#static_iterator-prop"><tt>.prop</tt></a></li>
+    </ul>
+    <ul class="toc_section">
+      <li>– <a href="#static_iterator-first"><tt>.first</tt></a></li>
+    </ul>
+    <ul class="toc_section">
+      <li>– <a href="#static_iterator-last"><tt>.last</tt></a></li>
+    </ul>
+
+  </div>
+
+  <div class="container">
+
+    <p><center>
+      <img id="logo" src="../images/iterjs_v1.png" alt="iter.js" style="width:auto"/>
+    </center></p>
+
+    <p>
+      <b>iter.js</b> brings in iterative capabilities over objects
+      by providing an <b>iterator</b> object that can iterate through
+      the enumerable properties of objects.
+    </p>
+	
+    <p>
+      The project is <a href="">hosted on GitHub</a>,
+      and the <a href="">annotated source code</a> is available,
+      an <a href="">example application</a>, and
+      a <a href="">list of tutorials</a>
+      <b>iter.js</b> is available for use under the
+	  <a href="http://github.com/jashkenas/backbone/blob/master/LICENSE">MIT software license</a>.
+    </p>
+
+    <p>
+      You can report bugs and discuss features on the
+      <a href="">GitHub issues page</a>.
+    </p>
+<!--
+    <p>
+      <i>
+        Backbone is an open-source component of
+        <a href="http://documentcloud.org/">DocumentCloud</a>.
+      </i>
+    </p>
+-->
+<!----------------------------------------------------------------------------------------------------------->
+<!-- Start: Downloads -->
+<!----------------------------------------------------------------------------------------------------------->
+    <h2 id="downloads">
+      Downloads
+    </h2>
+
+    <table>
+      <tr>
+        <td><a class="punch" href="iter.js">Development Version (1.0.0)</a></td>
+        <td class="text"><i>Full of comments!</i> (3.01KB)</td>
+      </tr>
+      <tr>
+        <td><a class="punch" href="iter.min.js">Minified Version (1.0.0)</a></td>
+        <td class="text"><i>Keeps variable names to help with debugging, but minified.</i> (886B)</td>
+      </tr>
+      <tr>
+        <td><a class="punch" href="iter.compressed.js">Production Version (1.0.0)</a></td>
+        <td class="text"><i>Compressed down removing all variable names.</i> (772B)</td>
+      </tr>
+    </table>
+	<p class="text">
+		<i>Compressed using <a href="http://jscompress.com/">JSCompress.com</i></a>.
+	</p>
+<!----------------------------------------------------------------------------------------------------------->
+<!-- End: Downloads -->
+<!----------------------------------------------------------------------------------------------------------->
+<!----------------------------------------------------------------------------------------------------------->
+<!-- Start: Getting Started -->
+<!----------------------------------------------------------------------------------------------------------->
+    <h2 id="Getting-started">
+	  Getting Started
+	</h2>
+	<h3 id="Getting-started">
+	  Introduction
+	</h3>
+    <p>
+      The current version provides a <a href="#static_iterator"><b>static iterator</b></a> 
+	  that produces a reference object to the object to be iterated over.
+	  This allows for the the following:
+    </p>
+<pre>
+for(var i = iter({a:0,b:1,c:2}); i.me != iter.nullptr; ++i.me)
+	console.log(i.$);
+/* === output ===
+0
+1
+2
+*/
+</pre>
+
+	<p>
+		The interesting bit is that since <tt>i</tt> only stores a reference to
+		the object and its property names, the amount of
+		<a href="#Getting-started-Stats">memory</a> <tt>i</tt>
+		uses is smaller than that of the object.
+	</p>
+	
+	<h3 id="Getting-started-loading">
+		Loading iter.js
+	</h3>
+	<p>
+		When <b>iter.js</b> loads, it attaches the <a href="#iter"><b>iter</b></a>
+		function to whatever scope the file is loaded in.
+	</p>
+<pre>
+function(_) {...}.call(this, this);
+</pre>
+	<p>
+		This allows for <b>iter.js</b> to attach itself to any library with ease as well
+		as restricting the libraries that <b>iter.js</b> uses. If loading using ajax
+		then using <tt>eval</tt> to run JS libraries, you can run <tt>eval</tt>
+		in a given scope and <a href="#iter"><b>iter</b></a> will attach to it.
+	</p>
+<pre>
+var thirdParty = {}, iterjsCode = ...;
+function (code) { eval(code); }.call(thirdParty, iterjsCode);
+</pre>
+	<p>
+		If not using ajax to load in, then copy the <b><a href="#downloads">iter.js</a></b>
+		file into a function like the following and then presto! 
+		<a href="#iter"><b>iter</b></a> will attach.
+	</p>
+<pre>
+var thirdParty = {};
+function(){/*iter.js code*/}.call(thirdParty);
+</pre>
+
+	<h3 id="Getting-started-Stats">
+		Statistics
+	</h3>
+
+    <p class="warning">
+		This is a warning...
+    </p>
+<!----------------------------------------------------------------------------------------------------------->
+<!-- End: Getting Started -->
+<!----------------------------------------------------------------------------------------------------------->
+<!----------------------------------------------------------------------------------------------------------->
+<!-- Start: iter function section -->
+<!----------------------------------------------------------------------------------------------------------->
+    <h2 id="iter">
+		iter
+	</h2>
+<pre>
+iter(object);
+</pre>
+    <p>
+      The <b>iter</b> function takes in a single argument and creates a
+	  <a href="#static_iterator"><b>static iterator</b></a> that will
+	  iterate through the argument's enumerable properties.
+    </p>
+	
+	<h3 id="iter-properties">
+		iter Properties
+	</h3>
+	
+	<table>
+		<tr>
+			<td class="small"><a href="#iter-nullptr"><tt>.nullptr</tt></a></td>
+			<td class="small">=> nullptr Object</td>
+		</tr>
+		<tr>
+			<td class="small"><a href="#iter-VERSION"><tt>.VERSION</tt></a></td>
+			<td class="small">=> String</td>
+		</tr>
+	</table>
+	
+	<h3 id="iter-VERSION">
+		iter.VERSION
+	</h3>
+	<p>
+		Returns the current <a href="#downloads">version</a> of <b>iter.js</b>.
+	</p>
+	
+	<h3 id="iter-nullptr">
+		iter.nullptr
+	</h3>
+	
+	<p>
+		The <tt>iter.nullptr</tt> is an empty object that has been frozen.
+		The <tt>valueOf</tt> for the <tt>iter.nullptr</tt> returns <tt>NaN</tt>
+		and since <b>iterator</b>'s <tt>.me</tt> returns itself or 
+		<tt>iter.nullptr</tt> depending on if it is out of bounds,
+		another way to check if an <b>iterator</b> is within bounds is by
+		using <tt>isNaN</tt>.
+	</p>
+<pre>
+for(var i = iter([0,1,2,3]); !isNaN(+i.me); ++i.me)
+	console.log(i.$);
+/* === output ===
+0
+1
+2
+3
+*/
+</pre>
+<!----------------------------------------------------------------------------------------------------------->
+<!-- End: iter function section -->
+<!----------------------------------------------------------------------------------------------------------->
+<!----------------------------------------------------------------------------------------------------------->
+<!-- Start: static_iterator function section -->
+<!----------------------------------------------------------------------------------------------------------->
+	 <h2 id="static_iterator">
+		Static Iterator
+	</h2>
+<pre>
+var i = iter(Object);
+</pre>
+    <p>
+      A <b>static_iterator</b> is a specialized object that iterates through a given
+	  object's enumerable properties. The <tt>valueOf</tt> for the object returns 
+	  its current ith position within the object's properties. This combined with
+	  the <b>static_iterator</b>'s <a href="#static_iterator-me"><tt>.me</tt></a> property 
+	  allows for <tt>i.me++</tt>. The reason for it being called static is because
+	  if the object being iterated over gains or loses any properties, the <b>iterator</b>
+	  would not know.
+    </p>
+	
+	<h3 id="static_iterator-properties">
+		Static Iterator Properties
+	</h3>
+	<table>
+		<tr>
+			<td class="small"><a href="#static_iterator-me"><tt>.me</tt></a></td>
+			<td class="small">=> itself</td>
+		</tr>
+		<tr>
+			<td class="small"><a href="#static_iterator-dollar"><tt>.$</tt></a></td>
+			<td class="small">=> Object</td>
+		</tr>
+		<tr>
+			<td class="small"><a href="#static_iterator-scope"><tt>.scope</tt></a></td>
+			<td class="small">=> Object</td>
+		</tr>
+		<tr>
+			<td class="small"><a href="#static_iterator-prop"><tt>.prop</tt></a></td>
+			<td class="small">=> Object</td>
+		</tr>
+		<tr>
+			<td class="small"><a href="#static_iterator-first"><tt>.first</tt></a></td>
+			<td class="small">=> itself</td>
+		</tr>
+		<tr>
+			<td class="small"><a href="#static_iterator-last"><tt>.last</tt></a></td>
+			<td class="small">=> itself</td>
+		</tr>
+	</table>
+	
+	<h3 id="static_iterator-me">
+		.me
+	</h3>
+	<p>
+		The most used property of the <b>static_iterator</b> object, <tt>.me</tt>
+		merely returns the <b>iterator</b> object itself. But, that is only if
+		the current ith position of the <b>iterator</b> object is within the 
+		bounds of the object's enumerable properties. If the ith position falls outside
+		of this range, <tt>.me</tt> returns <a href="#iter-nullptr"><tt>iter.nullptr</tt></a>.
+		This allows for the detection of whether or not an iterator has reached the
+		end of a loop.
+	</p>
+<pre>
+var i = iter([]);
+i.me === iter.nullptr; // => true 
+</pre>
+	<p>
+		This result is because <tt>.me</tt> is a getter and setter property.
+		When the get is called the property evaluates where the ith position
+		is and determines whether or not to return itself or 
+		<tt><a href="#iter-nullptr">iter.nullptr</a></tt>.
+		When the set is called the property evaluates whether or not the value
+		attempting to be set is a number. If it is a number (not NaN) then the
+		ith position will be changed to that new value. This allows for the
+		<tt>i.me++</tt>.
+	</p>
+<pre>
+var i = iter(['a']);
++i == 0 && +i.me == 0; // => true 
+i.me++ == 0;           // => true 
++i == 0 && +i.me == 0; // => true 
+</pre>
+	<h3 id="static_iterator-dollar">
+		.$
+	</h3>
+	<p>
+		<tt>.$</tt> property dereferences the <b>static_iterator</b> and returns
+		the value that it is pointing to.
+	</p>
+<pre>
+var i = iter(["a"]);
+console.log(i.$); // => 'a'
+</pre>
+	<p>
+		This is the same as using 
+		<tt><a href="#static_iterator-scope">i.scope</a>
+		[<a href="#static_iterator-prop">i.prop</a>]</tt>.
+	</p>
+	
+	<h3 id="static_iterator-scope">
+		.scope
+	</h3>
+	<p>
+		<tt>.scope</tt> returns the obejct that the <b>static_iterator</b> is iterating over.
+	</p>
+<pre>
+var o = {a:0},
+	i = iter(o);
+o === i.scope; // => true
+</pre>
+
+	<h3 id="static_iterator-prop">
+		.prop
+	</h3>
+	<p>
+		<tt>.prop</tt> returns the property name the <b>static_iterator</b> is currently
+		referencing. If the <b>static_iterator</b> is out of bounds then <tt>.prop</tt>
+		will return <tt><a href="#iter-nullptr">iter.nullptr</a></tt>.
+	</p>
+<pre>
+var i = iter({a:0});
+console.log(i.prop); // => "a"
+i.me++;
+console.log(i.prop); // => iter.nullptr
+</pre>
+	
+	<h3 id="static_iterator-first">
+		.first
+	</h3>
+	<p>
+		<tt>.first</tt> returns the <b>static_iterator</b> and sets the <b>static_iterator</b>
+		to the first enumerable property.
+	</p>
+<pre>
+var i = iter({a:0, b:1, c:2});
+console.log(i.prop); // => "a"
+i.me+=2;
+console.log(i.prop); // => "c"
+console.log(i.first.prop); // => "a"
+</pre>
+	<p>
+		This allows for resetting the <b>static_iterator</b> after a for loop.
+	</p>
+<pre>
+for(var i = iter({a:0,b:1,c:2}); !isNaN(+i.me); ++i.me)
+	console.log(i.prop, i.$);
+for(i.first; !isNaN(+i.me); ++i.me)
+	console.log(i.prop, i.$);
+/* === output ===
+a : 0
+b : 1
+c : 2
+a : 0
+b : 1
+c : 2
+*/
+</pre>
+	<h3 id="static_iterator-last">
+		.last
+	</h3>
+	<p>
+		<tt>.last</tt> returns the <b>static_iterator</b> and sets the <b>static_iterator</b>
+		to the last enumerable property.
+	</p>
+<pre>
+var i = iter({a:0, b:1, c:2}).last;
+console.log(i.prop); // => "c"
+</pre>
+	<p>
+		This allows for reverse for loops.
+	</p>
+<pre>
+for(var i = iter({a:0, b:1, c:2}).last; !isNaN(+i.me); --i.me)
+	console.log(i.prop, ":", i.$);
+/* === output ===
+c : 2
+b : 1
+a : 0
+*/
+</pre>
+<!----------------------------------------------------------------------------------------------------------->
+<!-- End: static_iterator function section -->
+<!----------------------------------------------------------------------------------------------------------->
+  </div>
+
+</body>
+</html>
