@@ -296,19 +296,14 @@
       iter.js <span class="version">(1.0.0)</span>
     </a>
     <ul class="toc_section">
-      <li>&raquo; <a href="">GitHub Repository</a></li>
       <li>&raquo; <a href="#downloads">Downloads</a></li>
-	  <!-- Really cool way of explaining code! -->
-      <!-- <li>&raquo; <a href="">Annotated Source</a></li> -->
     </ul>
 
     <a class="toc_title" href="#Getting-started">
       Getting Started
     </a>
     <ul class="toc_section">
-      <li>- <a href="#Getting-started">Introduction</a></li>
       <li>- <a href="#Getting-started-loading">Loading iter.js</a></li>
-      <li>– <a href="#Getting-started-Stats">Statistics</a></li>
     </ul>
 	
     <a class="toc_title" href="#iter">
@@ -358,28 +353,6 @@
       by providing an <b>iterator</b> object that can iterate through
       the enumerable properties of objects.
     </p>
-	
-    <p>
-      The project is <a href="">hosted on GitHub</a>,
-      and the <a href="">annotated source code</a> is available,
-      an <a href="">example application</a>, and
-      a <a href="">list of tutorials</a>
-      <b>iter.js</b> is available for use under the
-	  <a href="http://github.com/jashkenas/backbone/blob/master/LICENSE">MIT software license</a>.
-    </p>
-
-    <p>
-      You can report bugs and discuss features on the
-      <a href="">GitHub issues page</a>.
-    </p>
-<!--
-    <p>
-      <i>
-        Backbone is an open-source component of
-        <a href="http://documentcloud.org/">DocumentCloud</a>.
-      </i>
-    </p>
--->
 <!----------------------------------------------------------------------------------------------------------->
 <!-- Start: Downloads -->
 <!----------------------------------------------------------------------------------------------------------->
@@ -413,31 +386,6 @@
     <h2 id="Getting-started">
 	  Getting Started
 	</h2>
-	<h3 id="Getting-started">
-	  Introduction
-	</h3>
-    <p>
-      The current version provides a <a href="#static_iterator"><b>static iterator</b></a> 
-	  that produces a reference object to the object to be iterated over.
-	  This allows for the the following:
-    </p>
-<pre>
-for(var i = iter({a:0,b:1,c:2}); i.me != iter.nullptr; ++i.me)
-	console.log(i.$);
-/* === output ===
-0
-1
-2
-*/
-</pre>
-
-	<p>
-		The interesting bit is that since <tt>i</tt> only stores a reference to
-		the object and its property names, the amount of
-		<a href="#Getting-started-Stats">memory</a> <tt>i</tt>
-		uses is smaller than that of the object.
-	</p>
-	
 	<h3 id="Getting-started-loading">
 		Loading iter.js
 	</h3>
