@@ -14,6 +14,15 @@ Note: No variable names does not mean that the tool's name is removed, just the 
 ## Current Tools
 There current tools being worked on are:
 
+### nullptr.js
+**nullptr.js** is used to allow **nullptr** to be used in more tools.
+
+[nullptr.js](http://tkellehe.github.io/utils.js/nullptr.js/nullptr.js)
+
+[nullptr.min.js](http://tkellehe.github.io/utils.js/nullptr.js/nullptr.min.js)
+
+[nullptr.compressed.js](http://tkellehe.github.io/utils.js/nullptr.js/nullptr.compressed.js)
+
 ### iter.js
 **iter.js** brings in iterative capabilities over objects by providing an **iterator** object that can iterate through the enumerable properties of objects.
 ```javascript
@@ -27,11 +36,27 @@ c : 2
 ```
 [learn more...](http://tkellehe.github.io/utils.js/iter.js/)
 
-### nullptr.js
-**nullptr.js** is used to allow **nullptr** to be used in more tools.
+### point.js
+**point.js** is a tool that can create **pointer** like objects.
 
-[nullptr.js](http://tkellehe.github.io/utils.js/nullptr.js/nullptr.js)
+``` javascript
+var o = {o:{o:{a:"same",b:"value"},'o.b':"ignoreTree"}},
+    p = iter.point.call(o, "o.o.a");
+(function f(pointer) {
+    pointer.$ = "changed";
+})(p);
+console.log(o.o.o.a); // => "changed"
+console.log(p.scope(o.o).prop("o.b").$); // => "value"
+console.log(p.ignoreTree().$); // => "ignoreTree"
+```
+``` javascript
+var p = iter.point.call(Object,"propertyTree | property");
+console.log(iter.point.isPointer(p)); // => true
+// Redirects p.
+iter.point.call(AnotherObject, "propertyTree | property", p); // => p
+```
+[point.js](http://tkellehe.github.io/utils.js/point.js/point.js)
 
-[nullptr.min.js](http://tkellehe.github.io/utils.js/nullptr.js/nullptr.min.js)
+[point.min.js](http://tkellehe.github.io/utils.js/point.js/point.min.js)
 
-[nullptr.compressed.js](http://tkellehe.github.io/utils.js/nullptr.js/nullptr.compressed.js)
+[point.compressed.js](http://tkellehe.github.io/utils.js/point.js/point.compressed.js)
