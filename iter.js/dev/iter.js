@@ -1,4 +1,4 @@
-;(function(_, _defineProperty, _keys, _freeze) {
+;(function(_, _defineProperty, _keys, _freeze, _nullptr) {
 /**
  * new static_iterator(o, _keys(o));
  * Allows the iteration across enumerable properties of objects.
@@ -68,14 +68,17 @@ function iter(o) {
 	return new static_iterator(o,_keys(o));
 };
 
-// Object used as the nullptr for iterators.
-_defineProperty(iter, 'nullptr', {value:_freeze(new (function nullptr(){
+// Makes sure there is a nullptr object.
+_nullptr = _nullptr || _freeze(new (function nullptr(){
 	_defineProperty(this, 'valueOf', {value:function(){return NaN}});
-}))});
+}));
 
-// Attaches to the space loaded into.
-_defineProperty(_, 'iter', {value:iter,enumerable:true});
+// Object used as the nullptr for iterators.
+_defineProperty(iter, 'nullptr', {value:_nullptr});
 
 // The current version of iter.js.
 _defineProperty(iter, 'VERSION', {value:'1.0.0'});
-}).call(this, this, Object.defineProperty, Object.keys, Object.freeze)
+
+// Attaches to the space loaded into.
+_defineProperty(_, 'iter', {value:iter,enumerable:true});
+}).call(this, this, Object.defineProperty, Object.keys, Object.freeze, this.nullptr)
