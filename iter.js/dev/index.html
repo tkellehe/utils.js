@@ -16,4 +16,7 @@ i.last;
 do {
     console.log(i.prop, ":", i.$);
 } while(!isNaN(+i.prev.me));
+
+for(var i = iter(o).prev; !isNaN(+i.next.me);)
+	console.log(i.$);
 </script>

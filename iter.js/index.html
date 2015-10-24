@@ -912,6 +912,16 @@ b : 1
 a : 0
 */
 </pre>
+<pre>
+var o = {a:0,b:1,c:2};
+for(var i = iter(o).prev; !isNaN(+i.next.me);)
+    console.log(i.prop, ":", i.$);
+/* === output ===
+a : 0
+b : 1
+c : 2
+*/
+</pre>
 	<table>
 		<tr>
 			<td class="small"><a href="#additions-v2"><tt>.next</tt></a></td>
