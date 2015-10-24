@@ -8,10 +8,9 @@ function nullptr() {
 	var me = this;
 	// Makes sure that the valueOf always returns NaN.
 	_defineProperty(me, 'valueOf', {value:function(){return NaN}});
+	// The current version of nullptr.js.
+	_defineProperty(me, 'VERSION', {value:'1.0.0'});
 };
-
-// The current version of nullptr.js.
-_defineProperty(nullptr, 'VERSION', {value:'1.0.0'});
 
 // Freezes an instance of nullptr.
 _defineProperty(_, 'nullptr', {value:_freeze(new nullptr())});
