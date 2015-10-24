@@ -891,6 +891,40 @@ iter.point.call(AnotherObject, "propertyTree | property", p); // => p
 		iter.deref
 	</h3>
 	
+	<h3>
+		static_iterator (Additions)
+	<h3>
+<pre>
+var o = {a:0,b:1,c:2}, i = iter(o);
+do {
+	console.log(i.prop, ":", i.$);
+} while(!isNaN(+i.next));
+i.last;
+do {
+	console.log(i.prop, ":", i.$);
+} while(!isNaN(+i.prev));
+/* === output ===
+a : 0
+b : 1
+c : 2
+c : 2
+b : 1
+a : 0
+*/
+</pre>
+	<table>
+		<tr>
+			<td class="small"><a href="#additions-v2"><tt>.next</tt></a></td>
+			<td class="small">=> nullptr Object</td>
+			<td>|</td><td>itself</td>
+		</tr>
+		<tr>
+			<td class="small"><a href="#additions-v2"><tt>.last</tt></a></td>
+			<td class="small">=> nullptr Object</td>
+			<td>|</td><td>itself</td>
+		</tr>
+	</table>
+	
 	<h3 id="additions-v3">
 		Release 3 <a href="#additions-v2">Waiting for VERSION 2!</a>
 	</h3>
