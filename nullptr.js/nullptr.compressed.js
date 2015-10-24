@@ -1,0 +1,1 @@
+(function(e,t,n){function u(){var e=this;t(e,"valueOf",{value:function(){return 0/0}})}t(u,"VERSION",{value:"1.0.0"}),t(e,"nullptr",{value:n(new u)})}).call(this,this,Object.defineProperty,Object.freeze);
