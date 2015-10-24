@@ -3,7 +3,7 @@
  * new static_iterator(o, _keys(o));
  * Allows the iteration across enumerable properties of objects.
  * Though the byte size does grow as the number of enumerable properties increases
- * can move quickly through the properties. Also, if any new properties are aded or
+ * can move quickly through the properties. Also, if any new properties are added or
  * removed from the scope, the iterator will not know.
  * 
  * @param scope : The object for the iterator to move through.
@@ -74,7 +74,7 @@ function static_iterator(scope, props) {
  * @param o : The object to create an iterator for. If not provided correctly will
  * 			  return nullptr.
  * 
- * @return Returns a new static_iterator wrapped arounf the object.
+ * @return Returns a new static_iterator wrapped around the object.
  */
 function iter(o) {
 	// Makes sure that o is an actual object.
@@ -83,13 +83,45 @@ function iter(o) {
 	return new static_iterator(o,_keys(o));
 };
 
-// Makes sure there is a nullptr object.
-_nullptr = _nullptr || _freeze(new (function nullptr(){
-	_defineProperty(this, 'valueOf', {value:function(){return NaN}});
-}));
+/**
+ * Takes in an object and calcualtes the number of enumerable properties
+ * it has. If the object is an iterator objet then it will calculate
+ * the length of the iterator.
+ * 
+ * @param i : The object whose length is to be calculated.
+ * 
+ * @return Returns either the number of enumerable properties an
+ *         object has or the length of an iterator.
+ */
+_defineProperty(iter, "length", {value: function length(i) {
+	// Checks to see of it is a static_iterator.
+	if(i instanceof static_iterator)
+	{
+		// Stores the current location of the iterator.
+		var temp = +i, 
+		// Calculates the length of the iterator by going to the 
+		// last element then adding one to the index.
+			size = +i.last + 1;
+		// Resets the iterator.
+		i.me = temp;
+		// Defines the property length to the iterator.
+		_defineProperty(i, "length", {value:size, configurable:true, writable:true});
+		// Returns the size calculated.
+		return size;
+	}
+	// If not an iterator then return the number of 
+	// enumerable properties the object passed in has.
+	return _keys(i).length;
+}});
 
 // Object used as the nullptr for iterators.
-_defineProperty(iter, 'nullptr', {value:_nullptr});
+_defineProperty(iter, 'nullptr', {value:
+	// Makes sure there is a nullptr object.
+	_nullptr || 
+	_freeze(new (function nullptr(){
+		_defineProperty(this, 'valueOf', {value:function(){return NaN}});
+	}))
+});
 
 // The current version of iter.js.
 _defineProperty(iter, 'VERSION', {value:'1.0.0'});

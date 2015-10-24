@@ -1,22 +1,10 @@
 <script src="http://tkellehe.github.io/utils.js/nullptr.js/nullptr.js"></script>
 <script src="iter.js"></script>
 <script>
-var o = [0,1,2,3,4],
-	i = iter(o);
-for(;i.me != nullptr;i.next)
-	console.log(i.$);
-for(i.last;i.me != nullptr;i.prev)
-	console.log(i.$);
-console.log("do while test");
-var o = {a:0,b:1,c:2}, i = iter(o);
-do {
-    console.log(i.prop, ":", i.$);
-} while(!isNaN(+i.next.me));
-i.last;
-do {
-    console.log(i.prop, ":", i.$);
-} while(!isNaN(+i.prev.me));
-
-for(var i = iter(o).prev; !isNaN(+i.next.me);)
-	console.log(i.$);
+var o = [0,1,2,3];
+console.log(iter.length(o));
+var i = iter(o);
+console.log(i.length);
+console.log(iter.length(i));
+console.log(i.length);
 </script>

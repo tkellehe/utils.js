@@ -822,9 +822,36 @@ console.log(list["a"].$); // => 0
 	<h3>
 		iter.list
 	</h3>
+<pre>
+var list = iter.list([Object]);
+</pre>
+	<p>
+		Takes in an object and creates a <b>static_list</b>.
+	</p>
 	<h3>
 		iter.length
 	</h3>
+	<p>
+		Calculates the length of <b>iterator</b> objects
+		and will attach the result to the object is it is a
+		<a href="#static_iterator">static_iterator</a> instance.
+	</p>
+<pre>
+var o = {a:0, b:1, c:2},
+    i = iter(o);
+console.log(i.length);       // => undefined
+console.log(iter.length(i)); // => 3
+console.log(i.length);       // => 3
+</pre>
+<pre>
+var o = {a:0, b:1, c:2};
+console.log(iter.length(o)); // => 3
+</pre>
+<pre>
+var o    = {a:0, b:1, c:2},
+    list = iter.list(o);
+console.log(iter.length(list)); // => 3
+</pre>
 	<h3>
 		Pointer <a href="" class="warning"> Being moved to pointer.js</a>
 	</h3>
