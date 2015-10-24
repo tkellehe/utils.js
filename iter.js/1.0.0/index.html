@@ -4,15 +4,16 @@
 <head>
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
   <meta name="viewport" content="width=device-width">
-  <link rel="shortcut icon" href="images/iterjs_icon.png" />
+  <link rel="shortcut icon" href="../images/iterjs_icon.png" />
   <title>iter.js</title>
   <script src="iter.min.js"></script>
+  
   <style>
     body {
       font-size: 14px;
       line-height: 22px;
       font-family: Helvetica Neue, Helvetica, Arial;
-      background: #f4f4f4 url(images/background.png);
+      background: #f4f4f4 url(../images/background.png);
     }
     .interface {
       font-family: "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, sans-serif !important;
@@ -295,19 +296,14 @@
       iter.js <span class="version">(1.0.0)</span>
     </a>
     <ul class="toc_section">
-      <li>&raquo; <a href="">GitHub Repository</a></li>
       <li>&raquo; <a href="#downloads">Downloads</a></li>
-	  <!-- Really cool way of explaining code! -->
-      <!-- <li>&raquo; <a href="">Annotated Source</a></li> -->
     </ul>
 
     <a class="toc_title" href="#Getting-started">
       Getting Started
     </a>
     <ul class="toc_section">
-      <li>- <a href="#Getting-started">Introduction</a></li>
       <li>- <a href="#Getting-started-loading">Loading iter.js</a></li>
-      <li>– <a href="#Getting-started-Stats">Statistics</a></li>
     </ul>
 	
     <a class="toc_title" href="#iter">
@@ -344,48 +340,18 @@
       <li>– <a href="#static_iterator-last"><tt>.last</tt></a></li>
     </ul>
 
-    <a class="toc_title" href="#additions">
-      Future Additions
-    </a>
-	<ul class="toc_section">
-		<li>– <a href="#additions-v1">Release 1 Completed!</a></li>
-		<li>– <a href="#additions-v2">Release 2</a></li>
-		<li>– <a href="#additions-v3">Release 3</a></li>
-		<li>– <a href="#additions-v4">Release 4</a></li>
-	</ul>
-	
-	<a class="toc_title" href="#versions">
-	  Versions
-    </a>
-	<ul class="toc_section">
-		<li>– <a href="1.0.0/specs.html">1.0.0</a></li>
-	</ul>
   </div>
 
   <div class="container">
 
     <p><center>
-      <img id="logo" src="images/iterjs_v1.png" alt="iter.js" style="width:auto"/>
+      <img id="logo" src="../images/iterjs_v1.png" alt="iter.js" style="width:auto"/>
     </center></p>
 
     <p>
       <b>iter.js</b> brings in iterative capabilities over objects
       by providing an <b>iterator</b> object that can iterate through
       the enumerable properties of objects.
-    </p>
-	
-    <p>
-      The project is <a href="https://github.com/tkellehe/utils.js">hosted on GitHub</a>,
-      and the <a href="">annotated source code</a> is available,
-      an <a href="">example application</a>, and
-      a <a href="">list of tutorials</a>
-      <b>iter.js</b> is available for use under the
-	  <a href="https://github.com/tkellehe/utils.js/blob/master/LICENSE">MIT software license</a>.
-    </p>
-
-    <p>
-      You can report bugs and discuss features on the
-      <a href="https://github.com/tkellehe/utils.js/issues">GitHub issues page</a>.
     </p>
 <!----------------------------------------------------------------------------------------------------------->
 <!-- Start: Downloads -->
@@ -420,31 +386,6 @@
     <h2 id="Getting-started">
 	  Getting Started
 	</h2>
-	<h3 id="Getting-started">
-	  Introduction
-	</h3>
-    <p>
-      The current version provides a <a href="#static_iterator"><b>static iterator</b></a> 
-	  that produces a reference object to the object to be iterated over.
-	  This allows for the the following:
-    </p>
-<pre>
-for(var i = iter({a:0,b:1,c:2}); i.me != iter.nullptr; ++i.me)
-	console.log(i.$);
-/* === output ===
-0
-1
-2
-*/
-</pre>
-
-	<p>
-		The interesting bit is that since <tt>i</tt> only stores a reference to
-		the object and its property names, the amount of
-		<a href="#Getting-started-Stats">memory</a> <tt>i</tt>
-		uses is smaller than that of the object.
-	</p>
-	
 	<h3 id="Getting-started-loading">
 		Loading iter.js
 	</h3>
@@ -503,6 +444,7 @@ iter(object);
 	<h3 id="iter-properties">
 		iter Properties
 	</h3>
+	
 	<table>
 		<tr>
 			<td class="small"><a href="#iter-nullptr"><tt>.nullptr</tt></a></td>
@@ -727,218 +669,6 @@ a : 0
 </pre>
 <!----------------------------------------------------------------------------------------------------------->
 <!-- End: static_iterator function section -->
-<!----------------------------------------------------------------------------------------------------------->
-<!----------------------------------------------------------------------------------------------------------->
-<!-- Start: Additions -->
-<!----------------------------------------------------------------------------------------------------------->
-	<h2 id="additions">
-		Future Additions
-	</h2>
-	
-	<p>
-		<b>iter.js</b> is still growing and the following sections list the different features that will be
-		added as <b>iter.js</b> matures. Each <b>Release #</b> 
-	</p>
-	
-	<h3 id="additions-v1">
-		Release 1 <a href="#downloads">Completed!</a>
-	</h3>
-	<h3>
-		static_iterator
-	</h3>
-<pre>
-for(var i = iter([Object]); !isNaN(+i.me); ++i.me)
-	console.log(i.prop, ":", i.$);
-</pre>
-	<p>
-		Iterates through an object's enumerable properties, but
-		does not change if enumerable properties are added or removed.
-	</p>
-	<table>
-		<tr>
-			<td class="small"><a href="#static_iterator-me"><tt>.me</tt></a></td>
-			<td class="small">=> itself</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#static_iterator-dollar"><tt>.$</tt></a></td>
-			<td class="small">=> Object</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#static_iterator-scope"><tt>.scope</tt></a></td>
-			<td class="small">=> Object</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#static_iterator-prop"><tt>.prop</tt></a></td>
-			<td class="small">=> Object</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#static_iterator-first"><tt>.first</tt></a></td>
-			<td class="small">=> itself</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#static_iterator-last"><tt>.last</tt></a></td>
-			<td class="small">=> itself</td>
-		</tr>
-	</table>
-	<h3>
-		iter
-	</h3>
-<pre>
-var i = iter([Object]);
-</pre>
-	<p>
-		Takes in an object and creates a <b>static_iterator</b>.
-	</p>
-	<table>
-		<tr>
-			<td class="small"><a href="#iter-nullptr"><tt>.nullptr</tt></a></td>
-			<td class="small">=> nullptr Object</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#iter-VERSION"><tt>.VERSION</tt></a></td>
-			<td class="small">=> String</td>
-		</tr>
-	</table>
-	
-	<h3 id="additions-v2">
-		Release 2 <a href="#">In progress...</a>
-	</h3>
-	<h3>
-		static_list
-	</h3>
-<pre>
-var o = {a:0,b:1,c:2},
-    list = iter.list(o);
-for(var i in list)
-    console.log(list[i].$);
-/* === output ===
-0
-1
-2
-*/
-list["a"].me++;
-console.log(list["a"].$); // => 0
-</pre>
-	<h3>
-		iter.list
-	</h3>
-	<h3>
-		iter.length
-	</h3>
-	<h3>
-		Pointer <a href="" class="warning"> Being moved to pointer.js</a>
-	</h3>
-<pre>
-var o = {o:{o:{a:"same",b:"value"},'o.b':"ignoreTree"}},
-    p = iter.point.call(o, "o.o.a");
-(function f(pointer) {
-    pointer.$ = "changed";
-})(p);
-console.log(o.o.o.a); // => "changed"
-console.log(p.scope(o.o).prop("o.b").$); // => "value"
-console.log(p.ignoreTree().$); // => "ignoreTree"
-</pre>
-	<table>
-		<tr>
-			<td class="small"><a href="#additions-v2"><tt>.$</tt></a></td>
-			<td class="small">=> Object</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#additions-v2"><tt>.prop</tt></a></td>
-			<td class="small">=> String</td>
-			<td>|</td><td>itself</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#additions-v2"><tt>.scope</tt></a></td>
-			<td class="small">=> Object</td>
-			<td>|</td><td>itself</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#additions-v2"><tt>.propTree</tt></a></td>
-			<td class="small">=> Boolean</td>
-			<td>|</td><td>itself</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#additions-v2"><tt>.useTree</tt></a></td>
-			<td class="small">=> itself</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#additions-v2"><tt>.ignoreTree</tt></a></td>
-			<td class="small">=> itself</td>
-		</tr>
-	</table>
-	
-	<h3>
-		iter.point <a href="" class="warning"> Being moved to pointer.js</a>
-	</h3>
-<pre>
-var p = iter.point.call(Object,"propertyTree | property");
-console.log(iter.point.isPointer(p)); // => true
-// Redirects p.
-iter.point.call(AnotherObject, "propertyTree | property", p); // => p
-</pre>
-	<table>
-		<tr>
-			<td class="small"><a href="#additions-v2"><tt>.isPointer</tt></a></td>
-			<td class="small">=> Boolean</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#iter-nullptr"><tt>.nullptr</tt></a></td>
-			<td class="small">=> nullptr Object</td>
-		</tr>
-	</table>
-	<h3>
-		iter.deref
-	</h3>
-	
-	<h3 id="additions-v3">
-		Release 3 <a href="#additions-v2">Waiting for VERSION 2!</a>
-	</h3>
-	<h3>
-		dynamic_iterator
-	</h3>
-	<h3>
-		dynamic_list
-	</h3>
-	<h3>
-		iter.static
-	</h3>
-	<h3>
-		iter.dynamic
-	</h3>
-	<h3>
-		iter.list.static
-	</h3>
-	<h3>
-		iter.list.dynamic
-	</h3>
-	<h3>
-		iter.swapTo
-	</h3>
-	<h3>
-		iter.length
-	</h3>
-	<h3>
-		iter.deref
-	</h3>
-	
-	<h3 id="additions-v4">
-		Release 4 <a href="#additions-v3">Waiting for VERSION 3!</a>
-	</h3>
-<!----------------------------------------------------------------------------------------------------------->
-<!-- End: Additions -->
-<!----------------------------------------------------------------------------------------------------------->
-<!----------------------------------------------------------------------------------------------------------->
-<!-- Start: All Versions -->
-<!----------------------------------------------------------------------------------------------------------->
-	<h2 id = "versions">
-		All Versions
-	</h2>
-	<h3>
-		<a href="1.0.0/index.html">Version 1.0.0</a>
-	</h3>
-<!----------------------------------------------------------------------------------------------------------->
-<!-- End: All Versions -->
 <!----------------------------------------------------------------------------------------------------------->
   </div>
 
