@@ -51,7 +51,22 @@ function static_iterator(scope, props) {
 			return me;
 		}
 	});
+	// Moves the iterator up one then returns itself.
+	_defineProperty(me, 'next', {
+		get: function() {
+			++_i;
+			return me;
+		}
+	});
+	// Moves the iterator down one then returns itself.
+	_defineProperty(me, 'prev', {
+		get: function() {
+			--_i;
+			return me;
+		}
+	});
 };
+
 /**
  * iter([Object])
  * The function that creates iterators based off of input.
