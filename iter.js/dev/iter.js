@@ -127,7 +127,7 @@ _defineProperty(iter, 'nullptr', {value:
 });
 
 // The current version of iter.js.
-_defineProperty(iter, 'VERSION', {value:'1.0.0'});
+_defineProperty(iter, 'VERSION', {value:'1.1.0'});
 
 // Attaches to the space loaded into.
 _defineProperty(_, 'iter', {value:iter,enumerable:true});
