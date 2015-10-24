@@ -94,6 +94,9 @@ function iter(o) {
  *         object has or the length of an iterator.
  */
 _defineProperty(iter, "length", {value: function length(i) {
+	// If undefined, null, or nullptr then return zero.
+	if(i === undefined || i === null || i === iter.nullptr)
+		return 0;
 	// Checks to see of it is a static_iterator.
 	if(i instanceof static_iterator)
 	{
