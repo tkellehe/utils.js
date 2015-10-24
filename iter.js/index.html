@@ -898,11 +898,11 @@ iter.point.call(AnotherObject, "propertyTree | property", p); // => p
 var o = {a:0,b:1,c:2}, i = iter(o);
 do {
     console.log(i.prop, ":", i.$);
-} while(!isNaN(+i.next));
+} while(!isNaN(+i.next.me));
 i.last;
 do {
     console.log(i.prop, ":", i.$);
-} while(!isNaN(+i.prev));
+} while(!isNaN(+i.prev.me));
 /* === output ===
 a : 0
 b : 1
