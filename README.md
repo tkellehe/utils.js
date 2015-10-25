@@ -60,3 +60,50 @@ iter.point.call(AnotherObject, "propertyTree | property", p); // => p
 [point.min.js](http://tkellehe.github.io/utils.js/point.js/point.min.js)
 
 [point.compressed.js](http://tkellehe.github.io/utils.js/point.js/point.compressed.js)
+
+### strap.js
+**strap.js** is a tool that loads js into particular contexts with ease. This allows for other tools within **utils.js**
+to be used.
+
+When **strap.js** loads, it will grab the script tag it was loaded in (will do nothing if the src is not a strap.js file).
+If no other attributes are added to script tag, **strap.js** will not load anything and add the function **strap** to the
+context it was loaded into.
+```html
+<script src="path/to/strap.js"></script>
+<script> console.log(strap !== undefined) // => true </script>
+```
+
+Now, if trying to load a file, just provide the file name into the **strap** function or in the **data-srcs** attribute
+of the script tag.
+``` javascript
+strap("path/to/file.js");
+```
+``` html
+<script src="path/to/script" data-srcs="path/to/file.js"></script>
+```
+
+If you need to load a javascript file but do not want the **strap** function loaded, then use the **data-use** tag
+to indicate to just *use* **strap.js** to load the files and that is it.
+```html
+<script src="path/to/strap.js" data-use></script>
+<script> console.log(this.strap !== undefined) // => false </script>
+```
+
+To load files into a particular context, **strap** js provides a simple scripting language to do so.
+
+Commas between file names to load multiple files where each file will be loaded into the same conext as **strap.js** is loaded into.
+```
+file1.js, ..., filen.js
+```
+Run code snippets using ```<$< code snippet >$>``` in the same places as files.
+```
+<$< code >$>, file1.js, <$< code >$>, ...
+```
+If a file is provided then, can use the following technique to load into contexts.
+```
+file.js (o1, ..., on) { more strap.js script }, ...
+```
+
+There are some warnings though.
+- File paths with spaces currently are not supported.
+- Cannot embed multiple file context loading. ie ```file () { file () {} }``` due to using strictly just regex.
