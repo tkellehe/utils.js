@@ -124,6 +124,9 @@ function strap(srcs) {
 			collections[i].load();
 };
 
+// The current version of strap.js.
+_defineProperty(strap, "VERSION", {value:"1.0.0"});
+
 // Current implementation for extracting the files to be loaded.
 var _breakdownRegex = 
 	/\s*(?:([\w\$\.\\\/]*)\s*\(([\w\$\,\s]*)\)\s*\{([\w\W]*)\}|(\<\$\<)([\w\W]*?)(\>\$\>)|([^\,\s]+))\s*\,?/g,
