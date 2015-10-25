@@ -11,9 +11,12 @@ Each tool is created with three different files.
 
 Note: No variable names does not mean that the tool's name is removed, just the underlying object and functions used to create those objects' names were changed.
 
+***
+***
 ## Current Tools
 There current tools being worked on are:
 
+***
 ### nullptr.js
 **nullptr.js** is used to allow **nullptr** to be used in more tools.
 
@@ -23,6 +26,7 @@ There current tools being worked on are:
 
 [nullptr.compressed.js](http://tkellehe.github.io/utils.js/nullptr.js/nullptr.compressed.js)
 
+***
 ### iter.js
 **iter.js** brings in iterative capabilities over objects by providing an **iterator** object that can iterate through the enumerable properties of objects.
 ```javascript
@@ -36,6 +40,7 @@ c : 2
 ```
 [learn more...](http://tkellehe.github.io/utils.js/iter.js/)
 
+***
 ### point.js
 **point.js** is a tool that can create **pointer** like objects.
 
@@ -61,6 +66,7 @@ iter.point.call(AnotherObject, "propertyTree | property", p); // => p
 
 [point.compressed.js](http://tkellehe.github.io/utils.js/point.js/point.compressed.js)
 
+***
 ### strap.js
 **strap.js** is a tool that loads js into particular contexts with ease. This allows for other tools within **utils.js**
 to be used.
