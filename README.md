@@ -3,13 +3,13 @@ A bundle of different js tools that attach themselves to other libraries.
 
 Each tool is created with three different files.
 
-\<tool\>.js     => Contains comments describing the design that went into creating the tool's code implementation.
+```\<tool\>.js``` => Contains comments describing the design that went into creating the tool's code implementation.
 
-\<tool\>.min.js => A minified version of the tool, but still keeps all object names such that when debugging can view exactly what is breaking.
+````\<tool\>.min.js``` => A minified version of the tool, but still keeps all object names such that when debugging can view exactly what is breaking.
 
-\<tool\>.compressed.js => Using [JScompress](http://jscompress.com/) to compress the tool down even more by removing all variable names down to a single character.
+```\<tool\>.compressed.js``` => Using [JScompress](http://jscompress.com/) to compress the tool down even more by removing all variable names down to a single character.
 
-Note: No variable names does not mean that the tool's name is removed, just the underlying object and functions used to create those objects' names were changed.
+*Note*: No variable names does not mean that the tool's name is removed, just the underlying object and functions used to create those objects' names were changed.
 
 ***
 ***
