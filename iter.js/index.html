@@ -593,10 +593,10 @@ console.log(iter.length(null));         // => 0
 console.log(iter.length(iter.nullptr)); // => 0
 </pre>
 	<p>
-		Te reasoning behind not having the length already attached to the
+		The reasoning behind not having the length already attached to the
 		<b>static_iterator</b> already is because other objects in the future
 		will not such as the dynamic ones. So, to keep things consistant
-		all calculations for length can be done through iter.length.
+		all calculations for length can be done through <tt>iter.length</tt>.
 		Also, it allows <b>static_iterator</b> objects to not have unnecessary
 		properties when the length is very uncommon in using iterators
 		in other languages.
@@ -811,7 +811,7 @@ c : 2
 */
 </pre>
 	<p>
-		Can combine with <a href="static_iterator-prev"><tt>.prev</tt></a> to creates
+		Can combine with <a href="static_iterator-prev"><tt>.prev</tt></a> to create
 		a unique way of looping through a for loop. Since a for loop will
 		run the condition first before running, by first going back one the
 		for loop will increment before checking out of bounds to find it is in bounds.
@@ -846,7 +846,7 @@ a : 0
 */
 </pre>
 	<p>
-		Can combine with <a href="static_iterator-next"><tt>.next</tt></a> to creates
+		Can combine with <a href="static_iterator-next"><tt>.next</tt></a> to create
 		a unique way of looping through a for loop. Since a for loop will
 		run the condition first before running, by first going up one the
 		for loop will decrement before checking out of bounds to find it is in bounds.
@@ -970,7 +970,7 @@ var list = iter.list([Object]);
 	</h3>
 	<p>
 		Calculates the length of <b>iterator</b> objects
-		and will attach the result to the object is it is a
+		and will attach the result to the object if it is a
 		<a href="#static_iterator">static_iterator</a> instance.
 	</p>
 <pre>
