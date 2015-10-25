@@ -32,20 +32,21 @@ function strap(srcs) {
 		}
 };
 
-function src(string) {
+function SRC(string, context) {
 	var me = this,
 	    _s = string,
-		_c = [];
+		_c = context,
+		_f = [],
+		_o = [];
 		
 	_defineProperty(me, "src", {
 		get: function(){return _s},
 		enumerable:true
 	});
-	_defineProperty(me, "children", {
+	_defineProperty(me, "group", {
 		get: function(){return _c},
 		enumerable:true
 	});
-	
 	_defineProperty(me, "add", { value: function(child) {
 		
 	}});
@@ -56,10 +57,82 @@ function src(string) {
 	}});
 };
 
-_defineProperty(strap, "breakdown", {value:function breakdown(srcs) {
-	// reg for break down...
-	// \s*(\<[\w|\W]*\>)\s*\,?|\s*(?:([\w|\W]*?)\s*(?:\,|(?:\(([\w|\_|,|\s]*?)\)\s*\{\s*([\w|\W]*?)\s*\}\s*\,?)))|(?:\s*([^\s]+)\s*\,?)
+var breakdownRegex = 
+	/\s*(?:([\w\$\.\\]*)\s*(?:\,|\(([\w\$\,\s]*)\)\s*\{([\w\W]*)\}\s*\,?)|(\<\$\<)([\w\W]*?)(\>\$\>)\s*\,?|([^\s]+)\s*\,?)/;
+function g(regex, string, isThereMoreThanOneCapture) {
+	// Forces isThereMoreThanOneCapture to be a boolean.
+	isThereMoreThanOneCapture = !!isThereMoreThanOneCapture;
+	// Executes the regex on the string to get first match.
+	var getMatch = regex.exec(string),
+		matches = [], i = 0;
+	// While there is a match, keep grabbing.
+	while(getMatch) {
+		if(isThereMoreThanOneCapture)
+		{
+			// Stores the matches properly then adds them back.
+			var captures = [], j = 1;
+			// While there is a capture keep grabbing.
+			while(getMatch[j]){
+				captures[j-1] = getMatch[j++];
+			};
+			// Stores the captures.
+			matches[i++] = captures;
+		}
+		else
+			// Stores the capture.
+			matches[i++] = getMatch[1];
+		// Executes once again.
+		getMatch = regex.exec(string);
+	};
+	// Returns the matches.
+	return matches;
+};
+_defineProperty(strap, "breakdown", {value:function breakdown(srcsString, contexts) {
+	// Regexp does not work with spaces in file names.
+	var groups = g(breakdownRegex, srcsString, true),
+		all    = [];
+	// Makes sure there is a context.
+	context = contexts && contexts.length > 0 ? contexts || [_];
+	// Makes sure groups were actually found.
+	if(groups)
+		// Creates all of src objects.
+		for(var i = 0; i < groups.length; ++i)
+		{
+			(function(group) {
+				var srcs = [];
+				if(group.length === 3 && group[0] + group[2] === "<$<>$>")
+					for(var i in contexts)
+						if(contexts[i])
+							srcs.push(new SRC(group[1], contexts[i]).code(true));
+				else
+				{
+					// Go through each context and create an src for it.
+					for(var i in contexts)
+						if(contexts[i])
+						{
+							var src = new SRC(group[0], contexts[i]);
+							if(group.length === 3)
+							{
+								var temp     = group[1].split(/\s/).join("").split(","),
+									objects  = [];
+								// Get all of the objects used for loading the children.
+								for(var j in temp)
+									if(contexts[i][temp[j]])
+										objects.push(contexts[i][temp[j]]);
+								var children = breakdown(group[2], objects);
+								// Add all of the children for the src.
+								for(var j in children)
+									src.add(children[j]);
+							}
+							// Prevents any referencing error.
+							(function(src){srcs.push(src)})(src);
+						}
+				}
+			})(groups[i]);
+		}
+	return all;
 }});
+// breakdown ready for testing...
 
 // Determine whether or not to run strap on the current tag.
 if(_script)  
