@@ -103,7 +103,16 @@ If a file is provided then, can use the following technique to load into context
 ```
 file.js (o1, ..., on) { more strap.js script }, ...
 ```
+If there is a need to load in a context but not load a file, then ```//``` will indicate to ignore the file.
 
 There are some warnings though.
 - File paths with spaces currently are not supported.
 - Cannot embed multiple file context loading. ie ```file () { file () {} }``` due to using strictly just regex.
+
+#### Example
+``` html
+<script src="strap.js" 
+	data-srcs="<$<this.tools = {}>$>, // (tools) { nullptr.js, iter.js, point.js }"
+	data-use>
+</script>
+```
