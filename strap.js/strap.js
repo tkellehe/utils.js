@@ -2,10 +2,7 @@
 // Must first get all script tags if possible.
 if(document && document.getElementsByTagName)
 	var scripts = document.getElementsByTagName("script");
-(function(_, _defineProperty, _doc, _script, _eval) {
-// Allows eval to work within a scope.
-_eval = function(code) {return _eval(code)};
-	
+(function(_, _defineProperty, _doc, _body, _script, _eval) {
 // Used to store the options for calculating what to do with strap.
 var options = {
 		use: false,
@@ -18,48 +15,101 @@ var options = {
  * 
  */
 function strap(srcs) {
-	var collections = srcs.split(",");
+	var collections = strap.breakdown(srcs);
 	for(var i = 0; i < collections.length; ++i)
-		if((collections[i] = collections[i].split(/\s/).join("")) !== "")
-		{
-			var script = _doc.createElement("script");
-			script.src = collections[i];
-			script.onload = function() {
-				var temp = _doc.createElement("img");
-				img.src = 
-			};
-			_parent.insertBefore(script, _script);
-		}
+		if(collections[i] instanceof SRC)
+			collections[i].load();
 };
 
 function SRC(string, context) {
 	var me = this,
 	    _s = string,
+		_b = _,
 		_c = context,
-		_f = [],
-		_o = [];
-		
+		_g = [],
+		_o = [],
+		_j = false,
+		_l = false;
 	_defineProperty(me, "src", {
 		get: function(){return _s},
 		enumerable:true
 	});
-	_defineProperty(me, "group", {
-		get: function(){return _c},
+	_defineProperty(me, "context", {
+		get: function(){
+			if(_l) return _c;
+			var temp = _eval.call(_b, "(function(){"
+			+ " return this" + _c + ";"
+			+ "})()");
+			if(temp === undefined) return;
+			_l = true;
+			_c = temp;
+			console.log("Test: ", typeof _c);
+			return _c;
+		},
 		enumerable:true
 	});
-	_defineProperty(me, "add", { value: function(child) {
-		
-	}});
+	_defineProperty(me, "group", {
+		get: function(){return function(v) {
+			if(v === undefined) return _g;
+			_g.push(v);
+		}},
+		enumerable:true
+	});
+	_defineProperty(me, "objects", {
+		get: function(){return function(v) {
+			if(v === undefined) return _o;
+			_o.push(v);
+		}},
+		enumerable:true
+	});
 	_defineProperty(me, "load", { value:function() {
-		// loads children who continue to load each other...
-		// essentially running each other in the correct scope...
+		if(_j)
+			_eval.call(me.context, _s);
+		else
+		{
+			var isMSIE = /*@cc_on!@*/false,
+				loader;
+			if (isMSIE)
+			{
+				(loader = new Image()).src = _s;
+				loader.onload = function(){
+					console.warn("Current version does not support IE image tag loader.");
+				};
+			} 
+			else 
+			{
+				if(_s === "//")
+				{
+					for(var i in _g)
+						_g[i].load();
+					return me;
+				}
+				(loader = document.createElement('object')).data = _s;
+				loader.onload = function(){
+					_eval.call(me.context, this.contentDocument.getElementsByTagName("pre")[0].innerText);
+					for(var i in _g)
+						_g[i].load();
+				};
+				loader.width = loader.height = 0;
+				_body.appendChild(loader);
+			}
+		}
 		return me;
 	}});
+	_defineProperty(me, "code", {
+		get: function() { return function(v) {
+			if(v === undefined) return _j;
+			_j = v;
+			return me;
+		}},
+		set: function(v) { _j = v }
+	});
 };
 
-var breakdownRegex = 
-	/\s*(?:([\w\$\.\\]*)\s*(?:\,|\(([\w\$\,\s]*)\)\s*\{([\w\W]*)\}\s*\,?)|(\<\$\<)([\w\W]*?)(\>\$\>)\s*\,?|([^\s]+)\s*\,?)/;
-function g(regex, string, isThereMoreThanOneCapture) {
+var _breakdownRegex = 
+	/\s*(?:([\w\$\.\\\/]*)\s*\(([\w\$\,\s]*)\)\s*\{([\w\W]*)\}|(\<\$\<)([\w\W]*?)(\>\$\>)|([^\,\s]+))\s*\,?/g,
+	_groupCount = 7;
+function g(regex, string, groupCount, isThereMoreThanOneCapture) {
 	// Forces isThereMoreThanOneCapture to be a boolean.
 	isThereMoreThanOneCapture = !!isThereMoreThanOneCapture;
 	// Executes the regex on the string to get first match.
@@ -70,11 +120,13 @@ function g(regex, string, isThereMoreThanOneCapture) {
 		if(isThereMoreThanOneCapture)
 		{
 			// Stores the matches properly then adds them back.
-			var captures = [], j = 1;
+			var captures = [], j = 0, offset = 1;
 			// While there is a capture keep grabbing.
-			while(getMatch[j]){
-				captures[j-1] = getMatch[j++];
-			};
+			while(++j <= groupCount)
+				if(getMatch[j])
+					captures[j - offset] = getMatch[j];
+				else
+					++offset;
 			// Stores the captures.
 			matches[i++] = captures;
 		}
@@ -87,12 +139,15 @@ function g(regex, string, isThereMoreThanOneCapture) {
 	// Returns the matches.
 	return matches;
 };
+
 _defineProperty(strap, "breakdown", {value:function breakdown(srcsString, contexts) {
 	// Regexp does not work with spaces in file names.
-	var groups = g(breakdownRegex, srcsString, true),
+	var groups = g(_breakdownRegex, srcsString, _groupCount, true),
 		all    = [];
+		
 	// Makes sure there is a context.
-	context = contexts && contexts.length > 0 ? contexts || [_];
+	contexts = (contexts && contexts.length > 0) ? contexts : [""];
+	
 	// Makes sure groups were actually found.
 	if(groups)
 		// Creates all of src objects.
@@ -101,38 +156,38 @@ _defineProperty(strap, "breakdown", {value:function breakdown(srcsString, contex
 			(function(group) {
 				var srcs = [];
 				if(group.length === 3 && group[0] + group[2] === "<$<>$>")
+				{
 					for(var i in contexts)
-						if(contexts[i])
-							srcs.push(new SRC(group[1], contexts[i]).code(true));
+							srcs.push(new SRC(group[1], (contexts[i] === "" || contexts[i][0] === "." ? "" : ".") + contexts[i]).code(true));
+				}
 				else
 				{
 					// Go through each context and create an src for it.
 					for(var i in contexts)
-						if(contexts[i])
+					{
+						var src = new SRC(group[0], (contexts[i] === "" || contexts[i][0] === "." ? "" : ".") + contexts[i]);
+						if(group.length === 3)
 						{
-							var src = new SRC(group[0], contexts[i]);
-							if(group.length === 3)
-							{
-								var temp     = group[1].split(/\s/).join("").split(","),
-									objects  = [];
-								// Get all of the objects used for loading the children.
-								for(var j in temp)
-									if(contexts[i][temp[j]])
-										objects.push(contexts[i][temp[j]]);
-								var children = breakdown(group[2], objects);
-								// Add all of the children for the src.
-								for(var j in children)
-									src.add(children[j]);
-							}
-							// Prevents any referencing error.
-							(function(src){srcs.push(src)})(src);
+							var temp     = group[1].split(/\s/).join("").split(","),
+								objects  = [];
+							// Get all of the objects used for loading the children.
+							for(var j in temp)
+								objects.push(contexts[i] + (temp[j] === "" || temp[j][0] === "." ? "" : ".") + temp[j]);
+							var children = breakdown(group[2], objects);
+							// Add all of the children for the src.
+							for(var j in children)
+								src.group(children[j]);
 						}
+						// Prevents any referencing error.
+						(function(src){srcs.push(src)})(src);
+					}
 				}
+				for(var i in srcs)
+					all.push(srcs[i]);
 			})(groups[i]);
 		}
 	return all;
 }});
-// breakdown ready for testing...
 
 // Determine whether or not to run strap on the current tag.
 if(_script)  
@@ -149,13 +204,13 @@ if(_script)
 		// Run strap on the other srcs.
 		strap(options.srcs);
 	}
-	// Logging for debugging.
-	console.log(options);
 }
 
 // Adds strap to the loaded context if told to.
 if(options.use)
 	_defineProperty(_, "strap", {value:strap});
-}).call(this, this, Object.defineProperty, document,
+}).call(this, this, Object.defineProperty, document, document && document.getElementsByTagName("body")[0],
 		scripts !== undefined ? scripts[scripts.length - 1] : undefined,
-		this.eval || (window && window.eval));
+		// Allows eval to be ran in a context.
+		function _eval(code) { return eval(code)},
+		navigator.appName.indexOf('Microsoft') === 0);
