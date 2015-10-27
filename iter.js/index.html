@@ -990,68 +990,6 @@ var o    = {a:0, b:1, c:2},
 console.log(iter.length(list)); // => 3
 </pre>
 	<h3>
-		Pointer <a href="" class="warning"> Being moved to pointer.js</a>
-	</h3>
-<pre>
-var o = {o:{o:{a:"same",b:"value"},'o.b':"ignoreTree"}},
-    p = iter.point.call(o, "o.o.a");
-(function f(pointer) {
-    pointer.$ = "changed";
-})(p);
-console.log(o.o.o.a); // => "changed"
-console.log(p.scope(o.o).prop("o.b").$); // => "value"
-console.log(p.ignoreTree().$); // => "ignoreTree"
-</pre>
-	<table>
-		<tr>
-			<td class="small"><a href="#additions-v2"><tt>.$</tt></a></td>
-			<td class="small">=> Object</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#additions-v2"><tt>.prop</tt></a></td>
-			<td class="small">=> String</td>
-			<td>|</td><td>itself</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#additions-v2"><tt>.scope</tt></a></td>
-			<td class="small">=> Object</td>
-			<td>|</td><td>itself</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#additions-v2"><tt>.propTree</tt></a></td>
-			<td class="small">=> Boolean</td>
-			<td>|</td><td>itself</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#additions-v2"><tt>.useTree</tt></a></td>
-			<td class="small">=> itself</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#additions-v2"><tt>.ignoreTree</tt></a></td>
-			<td class="small">=> itself</td>
-		</tr>
-	</table>
-	
-	<h3>
-		iter.point <a href="" class="warning"> Being moved to pointer.js</a>
-	</h3>
-<pre>
-var p = iter.point.call(Object,"propertyTree | property");
-console.log(iter.point.isPointer(p)); // => true
-// Redirects p.
-iter.point.call(AnotherObject, "propertyTree | property", p); // => p
-</pre>
-	<table>
-		<tr>
-			<td class="small"><a href="#additions-v2"><tt>.isPointer</tt></a></td>
-			<td class="small">=> Boolean</td>
-		</tr>
-		<tr>
-			<td class="small"><a href="#iter-nullptr"><tt>.nullptr</tt></a></td>
-			<td class="small">=> nullptr Object</td>
-		</tr>
-	</table>
-	<h3>
 		iter.deref
 	</h3>
 	
