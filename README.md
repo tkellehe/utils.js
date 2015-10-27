@@ -14,7 +14,7 @@ Each tool is created with three different files.
 ***
 ***
 ## Current Tools
-There current tools being worked on are:
+The current tools being worked on are:
 
 ***
 ### nullptr.js
@@ -70,6 +70,8 @@ iter.point.call(AnotherObject, "propertyTree | property", p); // => p
 ### strap.js
 **strap.js** is a tool that loads js into particular contexts with ease. This allows for other tools within **utils.js**
 to be used.
+
+[strap.js](http://tkellehe.github.io/utils.js/strap.js/strap.js)
 
 When **strap.js** loads, it will grab the script tag it was loaded in (will do nothing if the src is not a strap.js file).
 If no other attributes are added to script tag, **strap.js** will not load anything and add the function **strap** to the
