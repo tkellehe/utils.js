@@ -24,9 +24,7 @@ function SRC(string, context) {
 			// Checks to see if the context has loaded yet.
 			if(_l) return _c;
 			// If has not loaded, then attempt to check.
-			var temp = _eval.call(_b, "(function(){"
-			+ " return this" + _c + ";"
-			+ "})()");
+			var temp = _eval.call(_b, "(function(){ return this" + _c + ";})()");
 			// If temp is undefined then the context still has not loaded yet.
 			if(temp === undefined) return;
 			// Else, indicate the context has loaded and store the context.
@@ -87,7 +85,7 @@ function SRC(string, context) {
 					for(var i in _g)
 						_g[i].load();
 					// Removes the object used for loading.
-					_body.removeChild(this);
+					_parent.removeChild(this);
 				};
 				// Hides the object.
 				loader.width = loader.height = 0;
@@ -195,21 +193,27 @@ function breakdown(srcsString, contexts) {
 				if(group.length === 3 && group[0] + group[2] === "<$<>$>")
 				{
 					for(var i in contexts)
-							srcs.push(new SRC(group[1], (contexts[i] === "" || contexts[i][0] === "." ? "" : ".") + contexts[i]).code(true));
+						srcs.push(new SRC(group[1], 
+										  (contexts[i] === "" || contexts[i][0] === "." ? "" : ".")
+										  + contexts[i]).code(true));
 				}
 				else
 				{
 					// Go through each context and create an src for it.
 					for(var i in contexts)
 					{
-						var src = new SRC(group[0], (contexts[i] === "" || contexts[i][0] === "." ? "" : ".") + contexts[i]);
+						var src = new SRC(group[0], 
+										  (contexts[i] === "" || contexts[i][0] === "." ? "" : ".")
+										  + contexts[i]);
 						if(group.length === 3)
 						{
 							var temp     = group[1].split(/\s/).join("").split(","),
 								objects  = [];
 							// Get all of the objects used for loading the children.
 							for(var j in temp)
-								objects.push(contexts[i] + (temp[j] === "" || temp[j][0] === "." ? "" : ".") + temp[j]);
+								objects.push(contexts[i] 
+											 + (temp[j] === "" || temp[j][0] === "." ? "" : ".")
+											 + temp[j]);
 							var children = breakdown(group[2], objects);
 							// Add all of the children for the src.
 							for(var j in children)
@@ -230,7 +234,7 @@ function breakdown(srcsString, contexts) {
 if(_script)  
 {
 	// Grabs based off of .../strap<...>.js
-	var strapJScheck = /\/{0,1}(strap)[\.]?[^\/]*(\.js)$/.exec(_script.src);
+	var strapJScheck = /\/?(strap)[\.]?[^\/]*(\.js)$/.exec(_script.src);
 	// If a script tag using strap.js to load then check for options.
 	if(strapJScheck != null && strapJScheck[1] + strapJScheck[2] === "strap.js")
 	{
@@ -250,5 +254,5 @@ if(options.use)
 		// Gets the most recently added script tag.
 		scripts !== undefined ? scripts[scripts.length - 1] : undefined,
 		// Allows eval to be ran in a context.
-		function _eval(code) { return eval(code)},
-		navigator.appName.indexOf('Microsoft') === 0);
+		function _eval(code) { return eval(code)}/*,
+		navigator.appName.indexOf('Microsoft') === 0*/);
