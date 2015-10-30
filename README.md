@@ -97,7 +97,7 @@ to indicate to just *use* **strap.js** to load the files and that is it.
 <script> console.log(this.strap !== undefined) // => false </script>
 ```
 
-To load files into a particular context, **strap** js provides a simple scripting language to do so.
+To load files into a particular context, **strap.js** provides a simple scripting language to do so.
 
 Commas between file names to load multiple files where each file will be loaded into the same conext as **strap.js** is loaded into.
 ```
