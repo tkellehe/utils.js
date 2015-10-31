@@ -1,8 +1,4 @@
-;
-// Must first get all script tags if possible.
-if(document && document.getElementsByTagName)
-	var scripts = document.getElementsByTagName("script");
-(function(_, _defineProperty, _eval, _RegExp) {
+;(function(_, _defineProperty, _eval, _RegExp) {
 // Makes sure can instantiate regular expressions.
 _RegExp = _RegExp || function(string) {return _eval.call(_,"/"+string+"/")};
 // Wrapper for Regexp.
