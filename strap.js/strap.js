@@ -235,20 +235,28 @@ if(_script)
 {
 	// Grabs based off of .../strap<...>.js
 	var strapJScheck = /\/?(strap)[\.]?[^\/]*(\.js)$/.exec(_script.src);
+	
 	// If a script tag using strap.js to load then check for options.
-	if(strapJScheck != null && strapJScheck[1] + strapJScheck[2] === "strap.js")
+	if(strapJScheck != null && strapJScheck[1] + strapJScheck[2] === "strap.js" &&
+	// Makes sure that if done then do not process anything.
+	!(options.done = ((options.done = _script.getAttribute("data-done")) || options.done === "")))
 	{
 		// If data-use is provided then strap will not be loaded into the space.
-		options.use = !(options.use = _script.getAttribute("data-use"))
-					    && options.use !== "";
+		options.use = (options.use = _script.getAttribute("data-use"))
+					    || options.use === "";
+		// Get the sources to process.
 		options.srcs = _script.getAttribute("data-srcs") || options.srcs;
+		
+		// Indicate that this script tag has been used.
+		_script.setAttribute("data-done", "");
 		// Run strap on the other srcs.
 		strap(options.srcs);
 	}
 }
 
-// Adds strap to the loaded context if told to.
-if(options.use)
+// Adds strap to the loaded context if told to. 
+// (If told not to process anything from the done attribute then can use.)
+if(!options.use)
 	_defineProperty(_, "strap", {value:strap});
 }).call(this, this, Object.defineProperty, document,
 		// Gets the most recently added script tag.
