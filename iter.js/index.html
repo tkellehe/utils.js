@@ -689,9 +689,9 @@ i.me === iter.nullptr; // => true
 	</p>
 <pre>
 var i = iter(['a']);
-+i == 0 && +i.me == 0; // => true 
-i.me++ == 0;           // => true 
-+i == 0 && +i.me == 0; // => true 
++i == 0 && +i.me == 0;   // => true 
+i.me++ == 0;             // => true 
++i == 1 && isNaN(+i.me); // => true 
 </pre>
 	<h3 id="static_iterator-dollar">
 		.$
