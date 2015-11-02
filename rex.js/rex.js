@@ -19,10 +19,14 @@ function REX(string) {
 	});
 	
 	_defineProperty(me, "exec", {value: function(string) {
+		var temp = "";
 		// Creates the regular expression object to be used on the _string.
-		var re = new _RegExp(_regex); // TODO: Go through the _chain stored linking everything.
+		for(var i = 0; i < _chain.length; ++i)
+			if(_chain[i] && _chain[i].STRING)
+				temp += _chain[i].STRING.data;
 		// Makes sure that string is a string and that _string refelects what is being executed.
 		me.content(string);
+		var re = new _RegExp(temp);
 		return re.exec(_string);
 	}, enumerable:true});
 	
@@ -38,10 +42,6 @@ function REX(string) {
 
 function rexer(string) {
 	return new REX(string);
-};
-
-function _carrier(link) {
-	this.store = link
 };
 
 function _link(settings){
