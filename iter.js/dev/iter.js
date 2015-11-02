@@ -67,17 +67,32 @@ function static_iterator(scope, props) {
 	});
 };
 
-function static_list(scope, props) {
+/**
+ * new static_list([Object]);
+ * Allows the iteration across enumerable properties of objects.
+ * This object utilizes the static_iterator such that every enumerable
+ * property of the object passed returns the itertator at for that property.
+ * 
+ * @param o : The object for the list to gather the enumerable properties from.
+ */
+function static_list(o) {
 	var // The instance being created.
 		me = this,
 		// Used to iterator through the properties.
-		_i = iter(scope, props);
+		_i = iter(o);
 	
+	// Iterates through the object's enumerable properties
+	// and attaches a getter and setter for the property
+	// such that it interfaces with the static_iterator.
 	for(;!isNaN(+_i.me);++_i.me)
 		(function(p) {_defineProperty(me, _i.prop, {
+			// First must set the iterator to the correct iteration value then return it.
 			get: function(){ _i.me = p; return _i;},
+			// First must set the iterator to the correct iteration value then set the vale to the reference.
 			set: function(v){ _i.me = p; _i.$ = v;},
+			// Makes sure that the property is enumerable.
 			enumerable:true
+		// Uses p to locate the exact value stored to recieve the correct property.
 		})})(+_i);
 };
 
@@ -153,8 +168,7 @@ _defineProperty(iter, "length", {value: function length(i) {
  * @return Returns a new static_list wrapped around the object.
  */
 _defineProperty(iter, 'list', {value: function(o) {
-	return new static_list(o, 
-	o === null || o === undefined || o === iter.nullptr ? [] : _keys(o));
+	return new static_list(o);
 }});
 
 // Object used as the nullptr for iterators.
