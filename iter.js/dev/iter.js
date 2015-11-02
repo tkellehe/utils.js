@@ -67,6 +67,20 @@ function static_iterator(scope, props) {
 	});
 };
 
+function static_list(scope, props) {
+	var // The instance being created.
+		me = this,
+		// Used to iterator through the properties.
+		_i = iter(scope, props);
+	
+	for(;!isNaN(+_i.me);++_i.me)
+		(function(p) {_defineProperty(me, _i.prop, {
+			get: function(){ _i.me = p; return _i;},
+			set: function(v){ _i.me = p; _i.$ = v;},
+			enumerable:true
+		})})(+_i);
+};
+
 /**
  * iter([Object])
  * The function that creates iterators based off of input.
@@ -112,9 +126,35 @@ _defineProperty(iter, "length", {value: function length(i) {
 		// Returns the size calculated.
 		return size;
 	}
+	// Checks to see of it is a static_list.
+	if(i instanceof static_list)
+	{
+		// Stores all of the properties of the list.
+		var props = _keys(i), 
+		// Calculates the length of the list.
+			size = props.length;
+		if(props[0] !== undefined)
+			// Defines the property length to the iterator.
+			_defineProperty(i[props[0]], "length", {value:size, configurable:true, writable:true});
+		// Returns the size calculated.
+		return size;
+	}
 	// If not an iterator then return the number of 
 	// enumerable properties the object passed in has.
 	return _keys(i).length;
+}});
+
+/**
+ * iter.list([Object])
+ * The function that creates list objects.
+ * 
+ * @param o : The object to create wrap the list object around.
+ * 
+ * @return Returns a new static_list wrapped around the object.
+ */
+_defineProperty(iter, 'list', {value: function(o) {
+	return new static_list(o, 
+	o === null || o === undefined || o === iter.nullptr ? [] : _keys(o));
 }});
 
 // Object used as the nullptr for iterators.
