@@ -965,6 +965,16 @@ var list = iter.list([Object]);
 	<p>
 		Takes in an object and creates a <b>static_list</b>.
 	</p>
+<pre>
+var list = iter.list({a:0,b:1,c:2});
+for(var i in list)
+    console.log(i.prop,":",i.$);
+/* === output ===
+a : 0
+b : 1
+c : 2
+*/
+</pre>
 	<h3>
 		iter.length
 	</h3>
@@ -1058,12 +1068,12 @@ reversed
 </pre>
 	<table>
 		<tr>
-			<td class="small"><a href="#additions-v2"><tt>.next</tt></a></td>
+			<td class="small"><a href="#static_iterator-next"><tt>.next</tt></a></td>
 			<td class="small">=> nullptr Object</td>
 			<td>|</td><td>itself</td>
 		</tr>
 		<tr>
-			<td class="small"><a href="#additions-v2"><tt>.last</tt></a></td>
+			<td class="small"><a href="#static_iterator-prev"><tt>.prev</tt></a></td>
 			<td class="small">=> nullptr Object</td>
 			<td>|</td><td>itself</td>
 		</tr>
