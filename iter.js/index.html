@@ -1024,6 +1024,38 @@ b : 1
 c : 2
 */
 </pre>
+<pre>
+function iterate(i) {
+    for(;!isNaN(+i.me);++i.me)
+        console.log(i.prop, ":", i.$);
+}
+
+var o = {a:0,b:1,c:2},
+    i = iter({a:0,b:1,c:2});
+iterate(i);
+iterate(i.rev.last);
+
+i.reverse = false;
+if(i.reverse())
+    console.log("reversed");
+else
+    console.log("normal");
+i.reverse(false).rev;
+if(i.reverse())
+    console.log("reversed");
+else
+    console.log("normal");
+/* === output ===
+a : 0
+b : 1
+c : 2
+c : 2
+b : 1
+a : 0
+normal
+reversed
+*/
+</pre>
 	<table>
 		<tr>
 			<td class="small"><a href="#additions-v2"><tt>.next</tt></a></td>
@@ -1034,6 +1066,10 @@ c : 2
 			<td class="small"><a href="#additions-v2"><tt>.last</tt></a></td>
 			<td class="small">=> nullptr Object</td>
 			<td>|</td><td>itself</td>
+		</tr>
+		<tr>
+			<td class="small"><a href="#additions-v2"><tt>.rev</tt></a></td>
+			<td class="small">=> itself</td>
 		</tr>
 	</table>
 	

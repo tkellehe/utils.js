@@ -1,4 +1,23 @@
 <script src="http://tkellehe.github.io/utils.js/nullptr.js/nullptr.js"></script>
 <script src="iter.js"></script>
 <script>
+function iterate(i) {
+	for(;!isNaN(+i.me);++i.me)
+		console.log(i.prop, ":", i.$);
+}
+
+var i = iter({a:0,b:1,c:2});
+iterate(i);
+iterate(i.rev.last);
+
+i.reverse = false;
+if(i.reverse())
+    console.log("reversed");
+else
+    console.log("normal");
+i.reverse(false).rev;
+if(i.reverse())
+    console.log("reversed");
+else
+    console.log("normal");
 </script>

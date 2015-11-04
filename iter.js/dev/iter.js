@@ -19,7 +19,9 @@ function static_iterator(scope, props) {
 		// The current property the iterator is on.
 		_i	   = 0,
 		// The amount of properties there are.
-		_l	   = props.length;
+		_l	   = props.length,
+		// A multiplier to make the iterator go in reverse.
+		_r     = 1;
 	// Used to convert the iterator into its indexed value.
 	_defineProperty(me, 'valueOf', {value:function(){return _i}});
 	// Used to alow access to the current scope of the iterator.
@@ -30,7 +32,10 @@ function static_iterator(scope, props) {
 	// Also can be used to set the current index if the new value is a number.
 	_defineProperty(me, 'me', {
 		get: function(){return 0 <= _i && _i < _l ? me : iter.nullptr},
-		set: function(v){if(!isNaN(v = +v)) _i = v}
+		set: function(v){if(!isNaN(v = +v)) 
+			// Calculates the change and will either subtract or add onto _i.
+			_i += _r * (v - _i)
+		}
 	});
 	// Dereferences the iterator to get what it is pointing to.
 	_defineProperty(me, '$', {
@@ -64,6 +69,22 @@ function static_iterator(scope, props) {
 			--_i;
 			return me;
 		}
+	});
+	// Reverses the iterator.
+	_defineProperty(me, 'rev', {
+		get: function() {
+			_r = -1 * _r;
+			return me;
+		}
+	});
+	// Reverses the iterator.
+	_defineProperty(me, 'reverse', {
+		get: function() { return function reverse(v) {
+			if(v === undefined) return _r == -1;
+			_r = (!!v * -2) + 1;
+			return me;
+		}},
+		set: function(v) { me.reverse(v) }
 	});
 };
 
