@@ -1,0 +1,73 @@
+<!-- <script src="hault.js"></script>
+
+<script>
+
+var f = safe(0,function(a) {
+    start(0);
+    use.b = "init";
+    console.log("1", a, use.b);
+	use.b = "Yay!!";
+	hault();
+	console.log("2", a, use.b);
+	hault();
+	console.log("Almost!");
+	return "Done!";
+});
+console.log(f("Hello!"));
+if(f.ishaulted) console.log(f.continue);
+if(f.ishaulted) console.log(f.continue);
+
+</script> -->
+
+<script src="../iter.js/iter.js"></script>
+
+<script>
+function stopwatch() {
+    var _time;
+	this.start = function() { _time = Date.now() }
+	this.end   = function() {
+	    return Date.now() - _time;
+	}
+}
+function test(p) {
+var o = {},
+	d = [];
+for(var i = 0; i < p; ++i) o[i] = 0;
+
+var s = new stopwatch();
+s.start();
+for(var i = 0; i < p; ++i) o[i] = 0;
+d[0] = s.end();
+
+s.start();
+for(var i in o) o[i] = 0;
+d[1] = s.end();
+
+s.start();
+d[2] = s.end();
+
+s.start();
+for(; !isNaN(+i.me); ++i.me) i.$ = 0;
+d[3] = s.end();
+
+return d;
+}
+var d = [0,0,0,0],
+    t = 100000,
+	p = 1000;
+for(var i = 0; i < t; ++i)
+{
+    var temp = test(p);
+	for(var j in d) d[j] += temp[j];
+}
+var m = 1000;
+console.log(p +","+ (m * d[0]/ t) +","+ (m * d[1]/ t) +","+ (m * d[2]/ t) +","+ (m * d[3]/ t));
+
+/*
+console.log("forloop:   ", d[0] / p);
+console.log("forin:     ", d[1] / p);
+console.log("iter make: ", d[2] / p);
+console.log("iter loop: ", d[3] / p);
+*/
+
+</script>
