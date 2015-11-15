@@ -86,6 +86,14 @@ function static_iterator(scope, props) {
 		}},
 		set: function(v) { me.reverse(v) }
 	});
+	// Checks to see if at the end.
+	_defineProperty(me, 'isend', {
+		get: function() { return 0 > _i || _i >= _l }
+	});
+	// Checks to see if can loop.
+	_defineProperty(me, 'canloop', {
+		get: function() { return _i*_i <= _i*(_l-1) } // Better!
+	});
 };
 
 /**
