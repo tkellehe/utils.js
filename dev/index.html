@@ -73,11 +73,20 @@ function test(o, p) {
 	for(i.prev; i.next.canloop;) i.$ = 0;
 	d[6] = s.end();
 
+	i.first;
+	
+	s.start();
+	for(;i.loopnext;) i.$ = 0;
+	d[7] = s.end();
+
 	return d;
 }
-function run(t, p)
+function run(t, p, tolerance)
 {
-var d = [0,0,0,0,0,0,0],
+var m = 1000;
+tolerance = tolerance || 0;
+tolerance = tolerance / m;
+var d = [0,0,0,0,0,0,0,0],
     div = t,
 	o = {};
 for(var i = 0; i < p; ++i) o[i] = 0;
@@ -85,21 +94,21 @@ for(var i = 0; i < t; ++i)
 {
     var temp = test(o, p),
 	    is_zero = false;
-	for(var j in temp) if(temp[j] == 0) {is_zero = true; div--; break;}
+	for(var j in temp) if(temp[j] <= tolerance) {is_zero = true; div--; break;}
 	if(!is_zero) for(var k in d) d[k] += temp[k];
 }
-var m = 1000;
 output.times("Times to test:   ", t);
 output.props("# of props:      ", p);
 output.divs ("divisor:         ", div);
 output.zeros("Number of zeros: ", t - div);
 output.results("forloop: "+ (m * d[0]/ div) + "<br>"
-              +", forin: "+ (m * d[1]/ div) + "<br>" 
-			  +", itermake: "+ (m * d[2]/ div) + "<br>"
-			  +", iterloop: "+ (m * d[3]/ div) + "<br>"
-			  +", iternext: "+ (m * d[4]/ div) + "<br>"
-			  +", iternextisend: "+ (m * d[5]/ div) + "<br>"
-			  +", iternextcanloop: "+ (m * d[6]/ div) + "<br>");
+              +"forin: "+ (m * d[1]/ div) + "<br>" 
+			  +"itermake: "+ (m * d[2]/ div) + "<br>"
+			  +"iterloop: "+ (m * d[3]/ div) + "<br>"
+			  +"iternext: "+ (m * d[4]/ div) + "<br>"
+			  +"iternextisend: "+ (m * d[5]/ div) + "<br>"
+			  +"iternextcanloop: "+ (m * d[6]/ div) + "<br>"
+			  +"iterloopnext: "+ (m * d[7]/ div) + "<br>");
 }
 
 function output(id, string) {
@@ -121,6 +130,15 @@ console.log("iter loop: ", d[3] / p);
 
 </script>
 
+<input type="text" placeholder="Times to test" id = "I0">
+<input type="text" placeholder="# of props" id = "I1">
+<input type="text" placeholder="Tolerance" id = "I2">
+<input type="submit" value="RUN" 
+onclick = "var v0 = +document.getElementById('I0').value, 
+               v1 = +document.getElementById('I1').value,
+			   v2 = +document.getElementById('I2').value;
+           run(v0, v1, v2)">
+<br>
 <p id="times"></p>
 <p id="props"></p>
 <p id="divs"></p>

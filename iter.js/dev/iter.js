@@ -59,21 +59,21 @@ function static_iterator(scope, props) {
 	// Moves the iterator up one then returns itself.
 	_defineProperty(me, 'next', {
 		get: function() {
-			++_i;
+			_i += _r;
 			return me;
 		}
 	});
 	// Moves the iterator down one then returns itself.
 	_defineProperty(me, 'prev', {
 		get: function() {
-			--_i;
+			_i -= _r;
 			return me;
 		}
 	});
 	// Reverses the iterator.
 	_defineProperty(me, 'rev', {
 		get: function() {
-			_r = -1 * _r;
+			_r *= -1;
 			return me;
 		}
 	});
@@ -92,7 +92,15 @@ function static_iterator(scope, props) {
 	});
 	// Checks to see if can loop.
 	_defineProperty(me, 'canloop', {
-		get: function() { return _i*_i <= _i*(_l-1) } // Better!
+		get: function() { return _i*_i <= _i*(_l - 1) }
+	});
+	// Moves to next and returns whether or not can loop.
+	_defineProperty(me, 'loopnext', {
+		get: function() { return _i++ < _l }
+	});
+	// Moves to next and returns whether or not can loop.
+	_defineProperty(me, 'loopprev', {
+		get: function() { return _i-- < _l }
 	});
 };
 
