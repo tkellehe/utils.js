@@ -321,6 +321,22 @@ function iter(o) {
 };
 
 /**
+ * iter.basic([Object])
+ * The function that creates iterators based off of input.
+ * 
+ * @param o : The object to create an iterator for. If not provided correctly will
+ *            return nullptr.
+ * 
+ * @return Returns a new lite_iterator wrapped around the object.
+ */
+_defineProperty(iter, 'basic', { value: function basic(o) {
+    // Makes sure that o is an actual object.
+    if(o === undefined || o === null) return iter.nullptr;
+    // Creates the iterator.
+    return new basic_iterator(o, _keys(o));
+}});
+
+/**
  * iter.lite([Object])
  * The function that creates iterators based off of input.
  * 
@@ -353,6 +369,7 @@ _defineProperty(iter, 'smart', { value: function smart(o) {
 }});
 
 /**
+ * iter.is([Object])
  * Takes in an object and returns whether or not it is an iterator.
  * 
  * @param i : The object to check whether or not it is an iterator.
@@ -360,7 +377,7 @@ _defineProperty(iter, 'smart', { value: function smart(o) {
  * @return Returns a boolean of whether or not the param is related to basic_iterator.
  *         True implies that it is an iterator object, and false otherwise.
  */
-_defineProperty(iter, 'isiter', { value: function isiter(i) { 
+_defineProperty(iter, 'is', { value: function isiter(i) { 
     // Check to see if is a basic_iterator or if inherited from basic_iterator.
     return _instanceOf(i, basic_iterator);
 }});

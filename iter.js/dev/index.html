@@ -11,7 +11,7 @@ for(; i.me !== iter.nullptr; ++i.me)
     console.log(i.prop, ":", i.$);
 
 // isiter
-console.log("isiter: ", iter.isiter(i));
+console.log("is: ", iter.is(i));
 
 console.log("lite_iterator test...");
 console.log(i = iter.lite({a:0, b:1, c:2}));
@@ -20,5 +20,5 @@ do {
 } while(i.loopnext)
 
 // isiter
-console.log("isiter: ", iter.isiter(i));
+console.log("is: ", iter.is(i));
 </script>
