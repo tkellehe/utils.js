@@ -38,7 +38,7 @@ b : 1
 c : 2
 */
 ```
-[learn more...](http://tkellehe.github.io/utils.js/iter.js/)
+[learn more...](https://github.com/tkellehe/utils.js/wiki/iter.js)
 
 ***
 ### point.js
