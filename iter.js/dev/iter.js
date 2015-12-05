@@ -304,6 +304,16 @@ function smart_iterator(scope, props) {
 // Makes the inheritance from lite_iterator to smart_iterator.
 _inherit(smart_iterator, lite_iterator);
 
+var 
+// The function that iter uses to create iterators.
+    create_iterator,
+// Object that has a list of functions used to change what iterator iter will create.
+    iter_setTo = {
+    basic: function(){ create_iterator = iter["basic"]; },
+    lite : function(){ create_iterator = iter["lite"]; },
+    smart: function(){ create_iterator = iter["smart"]; }
+};
+
 /**
  * iter([Object])
  * The function that creates iterators based off of input.
@@ -314,10 +324,8 @@ _inherit(smart_iterator, lite_iterator);
  * @return Returns a new basic_iterator wrapped around the object.
  */
 function iter(o) {
-    // Makes sure that o is an actual object.
-    if(o === undefined || o === null) return iter.nullptr;
-    // Creates the iterator.
-    return new basic_iterator(o, _keys(o));
+    // Makes sure that create_iterator is called in the same scope as iter.
+    return create_iterator.call(this, o);
 };
 
 /**
@@ -335,6 +343,12 @@ _defineProperty(iter, 'basic', { value: function basic(o) {
     // Creates the iterator.
     return new basic_iterator(o, _keys(o));
 }});
+
+// Makes the iter function return a basic_iterator.
+iter_setTo.basic();
+
+// Used to edit what iter creates.
+_defineProperty(iter, 'setTo', { value: iter_setTo });
 
 /**
  * iter.lite([Object])
@@ -383,6 +397,7 @@ _defineProperty(iter, 'is', { value: function isiter(i) {
 }});
 
 /**
+ * iter.length([Object])
  * Takes in an object and calculates the number of enumerable properties
  * it has. If the object is an iterator object then it will calculate
  * the length of the iterator.
@@ -437,6 +452,37 @@ _defineProperty(iter, 'nullptr', {value:
         _defineProperty(this, 'valueOf', {value:function(){return NaN}});
     }))
 });
+
+// Stores all of the types.
+var all_iterator_types = {
+    basic: basic_iterator,
+    lite:  lite_iterator,
+    smart: smart_iterator
+};
+
+/**
+ * iter.extend([String], [Function([Object], [arguments])], [Function([arguments])], [String])
+ * Gives the user the ability to create their own iterator class that inherits from basic_iterator.
+ * Note: The prototype of basic_iterator is not modified at all...
+ * 
+ * @param
+ * 
+ * 
+ * @return Returns iter for method chaining.
+ */
+_defineProperty(iter, 'extend', { value: function extend(name, instantiator, new_iterator, old_iterator_name) {
+    // Make name a string.
+    name = name + "";
+    // If already has the name then return iter.
+    if(iter[name]) return iter;
+    // _inherit from another iter.
+    _inherit(new_iterator, all_iterator_types[old_iterator_name]);
+    // Adds the instantiator function to iter.
+    _defineProperty(iter, name, { value: instantiator });
+    // Allows the user to set their own iterator to the default iter.
+    iter.setTo[name] = function() { create_iterator = iter[name]; };
+    return iter;
+}});
 
 // The current version of iter.js.
 _defineProperty(iter, 'VERSION', {value:'2.0.0'});
