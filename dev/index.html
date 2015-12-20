@@ -19,128 +19,60 @@ if(f.ishaulted) console.log(f.continue);
 
 </script> -->
 
-<style>
-p {
-    font-family: "Courier New", Times, serif;
-}
-</style>
-
-<script src="../iter.js/dev/iter.js"></script>
-
 <script>
-function stopwatch() {
-    var _time;
-	this.start = function() { _time = performance.now() }
-	this.end   = function() {
-	    return performance.now() - _time;
-	}
-}
-function test(o, p) {
-	var d = [];
-	
-	var s = new stopwatch();
-	s.start();
-	for(var i = 0; i < p; ++i) o[i] = 0;
-	d[0] = s.end();
 
-	s.start();
-	for(var i in o) o[i] = 0;
-	d[1] = s.end();
+// LSB is the RMB.
+// Will have problems with numbers larger than 32 bits.
+// So, can have array of _bits for each 32 bit number.
+function BIT_ARRAY(size) {
+    var self  = this,
+        _size = size,
+        _bits = 0;
+    for(var i = 0; i < _size; ++i)
+        (function(pos) {
+            // Creates a power of two.
+            var bit = 1 << pos;
+            Object.defineProperty(self, pos, { 
+                get:  function() {
+                    return bit & _bits;
+                },
+                set: function(b) {
+                    b ? (_bits |= bit) : (_bits &= (_bits - bit));
+                },
+                enumerable: true 
+            })
+        })(i)
 
-	s.start();
-	var i = iter(o);
-	d[2] = s.end();
+    self.valueOf = function() {
+        return _bits;
+    }
 
-	s.start();
-	for(; !isNaN(+i.me); ++i.me) i.$ = 0;
-	d[3] = s.end();
+    Object.defineProperty(self, "push", { value: function(value) {
+        var bit = 1 << _size;
+        // Creates the new bit position.
+        Object.defineProperty(self, _size, { 
+            get:  function() {
+                return bit & _bits;
+            },
+            set: function(b) {
+                b ? (_bits |= bit) : (_bits &= (_bits - bit));
+            },
+            enumerable:    true,
+            configureable: true
+        });
+        // Assigns the bit.
+        self[_size++] = !!value;
+    }});
+    Object.defineProperty(self, "pop", { value: function() {
+        // What the origional bit value was.
+        var bit = _bits & (--_size);
+        // Sets the bit to zero to ensure that _bits is the correct value.
+        self[_size] = 0;
 
-	i.first;
-	
-	s.start();
-	for(i.prev; !isNaN(+i.next.me);) i.$ = 0;
-	d[4] = s.end();
-
-	i.first;
-	
-	s.start();
-	for(i.prev; !i.next.isend;) i.$ = 0;
-	d[5] = s.end();
-
-	i.first;
-	
-	s.start();
-	for(i.prev; i.next.canloop;) i.$ = 0;
-	d[6] = s.end();
-
-	i.first;
-	
-	s.start();
-	for(;i.loopnext;) i.$ = 0;
-	d[7] = s.end();
-
-	return d;
-}
-function run(t, p, tolerance)
-{
-var m = 1000;
-tolerance = tolerance || 0;
-tolerance = tolerance / m;
-var d = [0,0,0,0,0,0,0,0],
-    div = t,
-	o = {};
-for(var i = 0; i < p; ++i) o[i] = 0;
-for(var i = 0; i < t; ++i)
-{
-    var temp = test(o, p),
-	    is_zero = false;
-	for(var j in temp) if(temp[j] <= tolerance) {is_zero = true; div--; break;}
-	if(!is_zero) for(var k in d) d[k] += temp[k];
-}
-output.times("Times to test:   ", t);
-output.props("# of props:      ", p);
-output.divs ("divisor:         ", div);
-output.zeros("Number of zeros: ", t - div);
-output.results("forloop: "+ (m * d[0]/ div) + "<br>"
-              +"forin: "+ (m * d[1]/ div) + "<br>" 
-			  +"itermake: "+ (m * d[2]/ div) + "<br>"
-			  +"iterloop: "+ (m * d[3]/ div) + "<br>"
-			  +"iternext: "+ (m * d[4]/ div) + "<br>"
-			  +"iternextisend: "+ (m * d[5]/ div) + "<br>"
-			  +"iternextcanloop: "+ (m * d[6]/ div) + "<br>"
-			  +"iterloopnext: "+ (m * d[7]/ div) + "<br>");
+        delete self[_size];
+        return bit;
+    }});
 }
 
-function output(id, string) {
-	document.getElementById(id).innerHTML = string;
-}
-
-output.times = function() { output("times", Array.prototype.join.call(arguments, " ").split(" ").join("&nbsp")); }
-output.props = function() { output("props",  Array.prototype.join.call(arguments, " ").split(" ").join("&nbsp")); }
-output.divs = function(){ output("divs",  Array.prototype.join.call(arguments, " ").split(" ").join("&nbsp")); }
-output.zeros = function(){ output("zeros",  Array.prototype.join.call(arguments, " ").split(" ").join("&nbsp")); }
-output.results = function(){ output("results",  Array.prototype.join.call(arguments, " ").split(" ").join("&nbsp")); }
-
-/*
-console.log("forloop:   ", d[0] / p);
-console.log("forin:     ", d[1] / p);
-console.log("iter make: ", d[2] / p);
-console.log("iter loop: ", d[3] / p);
-*/
 
 </script>
-
-<input type="text" placeholder="Times to test" id = "I0">
-<input type="text" placeholder="# of props" id = "I1">
-<input type="text" placeholder="Tolerance" id = "I2">
-<input type="submit" value="RUN" 
-onclick = "var v0 = +document.getElementById('I0').value, 
-               v1 = +document.getElementById('I1').value,
-			   v2 = +document.getElementById('I2').value;
-           run(v0, v1, v2)">
-<br>
-<p id="times"></p>
-<p id="props"></p>
-<p id="divs"></p>
-<p id="zeros"></p>
-<p id="results"></p>
