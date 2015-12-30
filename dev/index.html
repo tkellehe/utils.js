@@ -19,7 +19,21 @@ if(f.ishaulted) console.log(f.continue);
 
 </script> -->
 
+<script src="oop.js"></script>
+
 <script>
+
+/*    function overridable(self, prop, descriptor) {
+        Object.defineProperty(self, prop, descriptor);
+        // If you cannot write over the property then there cannot be an override.
+        if(!descriptor.writable) return self;
+        function override(descriptor) {
+            var overridden = self[prop];
+            overridable(self, prop, descriptor);
+            self[prop].overridden = overridden;
+        };
+        Object.defineProperty(self[prop], "override", { value: override });
+    }
 
 // LSB is the RMB.
 // Will have problems with numbers larger than 32 bits.
@@ -74,5 +88,5 @@ function BIT_ARRAY(size) {
     }});
 }
 
-
+*/
 </script>
