@@ -1,0 +1,67 @@
+/*************************************************************************************************************
+* The actual web site
+*************************************************************************************************************/
+.holder{
+    background-color: inherit;
+    height: 80%;
+}
+
+.left{
+    float: left;
+    width: 45%;
+    padding: 1em;
+}
+
+.right{
+    float: right;
+    width: 45%;
+    height: 100%;
+    padding: 1em;
+    background-color: rgb(220,220,220);
+}
+/*************************************************************************************************************
+* Styling for demo area...
+*************************************************************************************************************/
+.authors {
+    font-size: 80%;
+}
+
+.author {
+    font-variant: small-caps;
+}
+
+.author-name {
+    font-variant:    normal;
+    font-style:      oblique;
+    font-family:     Gill Sans, serif;
+    font-size:       110%;
+    text-decoration: underline;
+}
+
+.author-name:hover {
+    cursor: pointer;
+}
+
+ul {
+    max-width: 580px; 
+}
+
+ul.documentation {
+    list-style: none; 
+}
+ul.documentation li.description {
+    margin-top: 0; 
+}
+ul.documentation ul {
+    margin-top:  1.5em;
+    list-style:  none;
+    margin-left: 1.5em;
+    font-size:   80%;
+    line-height: 1.5em; 
+}
+ul.documentation ul li:not(:first-child) {
+    margin-top: 1.125em; 
+}
+ul.documentation ul li p {
+    margin-top: 0;
+}

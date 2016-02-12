@@ -23,6 +23,12 @@ function StopWatch() {
         _end = _clock.now();
     }});
 
+    // Returns the current end and start time.
+    _defineProperty(me, "timeStamp", { 
+        get: function() { return { start: _start, end: _end }; },
+        enumerable: true
+    });
+
     /**
      * Returns the times the start and end. If the start is larger than the end or
      * either start or end is zero, then the function will return zero.
@@ -59,4 +65,4 @@ _defineProperty(StopWatch, "VERSION", { value: "1.0.0" });
 
 _defineProperty(_, "StopWatch", { value: StopWatch });
 
-})(this, Object.defineProperty, performance || Date, Object.keys)
+})(this, Object.defineProperty, this.performance || this.Date, Object.keys)

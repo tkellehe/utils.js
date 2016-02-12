@@ -41,7 +41,7 @@ if(_Stack === undefined) _Stack = function() {
     }});
 }
 
-// The stack that stackme.js will keep strack off.
+// The stack that stackme.js will keep track of.
 var _the_stack = new _Stack();
 
 function _Entry(obj) {

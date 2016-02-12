@@ -18,7 +18,7 @@ _nullptr = _nullptr || _freeze(new (function nullptr(){
 function Pointer(prop, scope) {
 	var	// The instance being created.
 		me       = this,
-		// The scope the pointer is poiting into.
+		// The scope the pointer is pointing into.
 		_scope   = scope,
 		// Whether or not for the pointer to treat the prop as a property tree.
 		_useTree = true,
@@ -120,7 +120,7 @@ function Pointer(prop, scope) {
 };
 
 /**
- * point("<property tree | property name>", [Pointer])
+ * point("<property tree | property name>" [, Pointer])
  * Creates a Pointer instance or redirects a pointer to a property within the scope
  * this function is ran in. By default it will run in the global space.
  * 
