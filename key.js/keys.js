@@ -1,14 +1,27 @@
 (function(global, g_defprop, g_doc){
+    
+function is_function(obj) { return obj instanceof Function }
 
-function has_addEventListener(obj) { return obj && !!obj.addEventListener }
+function __make_element_event_adder__(event, element) {
+    return is_function(element.addEventListener) ? 
+                function(f) { element.addEventListener(event, f) }
+            :
+                ((event = "on" + event) && function(f) { element[event] = f })
+};
+function __make_element_event_remover__(event, element) {
+    return is_function(element.removeEventListener) ? 
+                function(f) { element.removeEventListener(event, f) }
+            :
+                ((event = "on" + event) && function(f) { if(element[event] === f) delete element[event] })
+};
 
 /**
  * keys([KEY | CODE] [, ELEMENT])
  * 
- * @param key  : 
- * @param code : 
+ * @param key     : Can be either a key or a code. 
+ * @param element : The HTML element or any element with the ability to trigger onkeydown or onkeyup.
  * 
- * @return Returns a Key instance that 
+ * @return Returns a Key instance that will attach istelf to the element listening for onkey events.
  */
 function keys(key, element) {
     var code = keys.tocode(key);
@@ -17,12 +30,11 @@ function keys(key, element) {
         key = keys.tokey(code);
     }
 
-    return new Key(key, code, (has_addEventListener(element) ? element : g_doc));
+    return new Key(key, code, ((element instanceof Object) ? element : g_doc));
 }
 keys.__key_code_to_key__ = {};
 keys.__key_to_key_code__ = {};
 keys.__raw_data__        = {};
-keys.__count_keydown__   = {};
 
 // Need to add functinality to make plugins for everything.
 
@@ -39,44 +51,168 @@ function KeyEvent(key_members, event) {
 }
 
 function Key(key, code, elem) {
-    // add stopwatch...
     var _members = {
         __self__: this,
         key: key,
         code: code,
-        elem: elem,
+        element: elem,
         isdown: false,
+        ispressed: false,
         kevent_down: undefined,
+        kevent_pressed: undefined,
         kevent_up: undefined,
-        up_events: {},
-        down_events: {},
-        press_events: {}
+        events_down: [],
+        events_pressed: [],
+        events_up: []
     };
-
-    _members.elem.addEventListener("keydown", function(event) {
+    
+    // Used for connecting and disconnecting to the element.
+    var _keydown_element_adder   = __make_element_event_adder__  ("keydown", _members.element),
+        _keydown_element_remover = __make_element_event_remover__("keydown", _members.element),
+        _keyup_element_adder   = __make_element_event_adder__  ("keyup", _members.element),
+        _keyup_element_remover = __make_element_event_remover__("keyup", _members.element);
+    
+    // The event actually connected to the keydown and invokes all of the registered events to the key.
+    function _keydown_event(event) {
         var keyevent = new KeyEvent(_members, event);
         if(keyevent.code == code) {
-            _members.kevent_down = keyevent;
-            _members.isdown = true;
+            if(_members.isdown) {
+                _members.ispressed = true;
+                _members.kevent_pressed = keyevent;
+                for(var i in _members.events_pressed) _members.events_pressed[i](_members.kevent_pressed);
+            } else {
+                _members.isdown = true;
+                _members.kevent_down = keyevent;
+                for(var i in _members.events_down) _members.events_down[i](_members.kevent_down);
+            }
         }
-    });
-
-    _members.elem.addEventListener("keyup", function(event) {
+    };
+    // The event actually connected to the keyup and invokes all of the registered events to the key.
+    function _keyup_event(event) {
         var keyevent = new KeyEvent(_members, event);
         if(keyevent.code == code) {
             _members.isdown = false;
+            _members.ispressed = false;
             _members.kevent_up = keyevent;
+            for(var i in _members.events_up) _members.events_up[i](_members.kevent_up);
         }
+    };
+        
+    g_defprop(_members.__self__, "connect", { 
+        value: function() { _keydown_element_adder(_keydown_event); _keyup_element_adder(_keyup_event); },
+        enumerable: true
+    });    
+    g_defprop(_members.__self__, "disconnect", { 
+        value: function() { _keydown_element_remover(_keydown_event); _keyup_element_remover(_keyup_event); },
+        enumerable: true
     });
 
     g_defprop(_members.__self__, "__self__", { value: _members.__self__ });
     g_defprop(_members.__self__, "key", { value: _members.key, enumerable: true });
     g_defprop(_members.__self__, "code", { value: _members.code, enumerable: true });
+    
     g_defprop(_members.__self__, "isdown", {
         get: function() { return _members.isdown },
         enumerable: true
     });
+    g_defprop(_members.__self__, "ispressed", {
+        get: function() { return _members.ispressed },
+        enumerable: true
+    });
+    g_defprop(_members.__self__, "isup", {
+        get: function() { return !_members.isdown },
+        enumerable: true
+    });
+    
+    function onkeydown(f) {
+        if(is_function(f)) {
+            onkeydown.remove();
+            _members.events_down.push(f);
+        }
+        return _members.__self__;
+    };
+    g_defprop(onkeydown, "add", { value: function(f) {
+        if(is_function(f)) {
+            _members.events_down.push(f);
+        }
+        return _members.__self__;
+    }});
+    g_defprop(onkeydown, "remove", { value: function(f) {
+        if(f === undefined) {
+            for(var i = _members.events_down.length; i--;) delete _members.events_down[i]
+        }
+        else if(is_function(f)) {
+            for(var i = _members.events_down.length; i--;) if(_members.events_down[i] === f) {
+                delete _members.events_down[i];
+                break;
+            }
+        }
+        return _members.__self__;
+    }});
+    g_defprop(_members.__self__, "onkeydown", { value: onkeydown, enumerable: true });
+    
+    function onkeypress(f) {
+        if(is_function(f)) {
+            onkeypress.remove();
+            _members.events_pressed.push(f);
+        }
+        return _members.__self__;
+    };
+    g_defprop(onkeypress, "add", { value: function(f) {
+        if(is_function(f)) {
+            _members.events_pressed.push(f);
+        }
+        return _members.__self__;
+    }});
+    g_defprop(onkeypress, "remove", { value: function(f) {
+        if(f === undefined) {
+            for(var i = _members.events_pressed.length; i--;) delete _members.events_pressed[i]
+        }
+        else if(is_function(f)) {
+            for(var i = _members.events_pressed.length; i--;) if(_members.events_pressed[i] === f) {
+                delete _members.events_pressed[i];
+                break;
+            }
+        }
+        return _members.__self__;
+    }});
+    g_defprop(_members.__self__, "onkeypress", { value: onkeypress, enumerable: true });
+    
+    function onkeyup(f) {
+        if(is_function(f)) {
+            onkeyup.remove();
+            _members.events_up.push(f);
+        }
+        return _members.__self__;
+    };
+    
+    g_defprop(onkeyup, "add", { value: function(f) {
+        if(is_function(f)) {
+            _members.events_up.push(f);
+        }
+        return _members.__self__;
+    }});
+    g_defprop(onkeyup, "remove", { value: function(f) {
+        if(f === undefined) {
+            for(var i = _members.events_up.length; i--;) delete _members.events_up[i]
+        }
+        else if(is_function(f)) {
+            for(var i = _members.events_up.length; i--;) if(_members.events_up[i] === f) {
+                delete _members.events_up[i];
+                break;
+            }
+        }
+        return _members.__self__;
+    }});
+    
+    g_defprop(_members.__self__, "onkeyup", { value: onkeyup, enumerable: true });
+    
+    // Connects to the element.
+    _members.__self__.connect();
 }
+
+//------------------------------------------------------------------------------------------------------------
+// Keys and Codes
 
 // Letters
 keys.__key_code_to_key__[65] = "a";
@@ -135,8 +271,8 @@ keys.__key_code_to_key__[56] = "numpad_eight";
 keys.__key_code_to_key__[57] = "numpad_nine";
 
 // Other
-keys.__key_code_to_key__[8] = "backspace";
-keys.__key_code_to_key__[9] = "tab";
+keys.__key_code_to_key__[08] = "backspace";
+keys.__key_code_to_key__[09] = "tab";
 keys.__key_code_to_key__[13] = "enter";
 keys.__key_code_to_key__[16] = "shift";
 keys.__key_code_to_key__[17] = "ctrl";
@@ -201,13 +337,10 @@ for(var keyCode in keys.__key_code_to_key__)
 g_doc.addEventListener("keydown", function(event){
     var code = event.which || event.keyCode;
     keys.__raw_data__[code] = true;
-    if(!keys.__count_keydown__[code]) keys.__count_keydown__[code] = 0;
-    ++keys.__count_keydown__[code];
 });
 g_doc.addEventListener("keyup", function(event){
     var code = event.which || event.keyCode;
     delete keys.__raw_data__[code];
-    delete keys.__count_keydown__[code];
 });
 
 //------------------------------------------------------------------------------------------------------------
@@ -226,7 +359,7 @@ g_defprop(keys, "tocode", {
     enumerable: true
 });
 g_defprop(keys, "tokey", { 
-    value: function(code){ return keys.__key_code_to_key__[code]; },
+    value: function(code){ return keys.__key_code_to_key__[+code]; },
     enumerable: true
 });
 
