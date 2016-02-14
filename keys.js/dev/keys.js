@@ -598,12 +598,14 @@ g_defprop(keys, "tokey", function(code){
     var key = keys.__key_code_to_key__[+code];
     return key === undefined ? keys.__key_code_to_key__[keys.tocode(code)] : key;
 });
-g_defprop(keys, "toshort",
-    function(code){ 
-        var short = keys.__key_code_to_short__[+code];
-        // If the code did not provide the correct short then assume the code is a key.
-        return short === undefined ? keys.__key_code_to_short__[keys.tocode(code)] : r;
-    });
+g_defprop(keys, "toshort", function(code){ 
+    var short = keys.__key_code_to_short__[+code];
+    // If the code did not provide the correct short then assume the code is a key.
+    return short === undefined ? keys.__key_code_to_short__[keys.tocode(code)] : r;
+});
+g_defprop(keys, "iscode", function(key){ return keys.tocode(key) !== undefined; });
+g_defprop(keys, "iskey", function(code){ return keys.tokey(code) !== undefined; });
+g_defprop(keys, "isshort", function(code){ return keys.toshort(code) !== undefined; });
 
 /**
  * Used to add plug-ins to keys.js. These functions added in will receive
