@@ -1,61 +1,14 @@
-(function(global, g_defprop, g_doc){
-//============================================================================================================
-// Helpful functions.
-//============================================================================================================
-function is_function(obj) { return obj instanceof Function }
-
-function __make_element_event_adder__(event, element) {
-    return is_function(element.addEventListener) ? 
-                function(f) { element.addEventListener(event, f) }
-            :
-                ((event = "on" + event) && function(f) { element[event] = f })
-};
-function __make_element_event_remover__(event, element) {
-    return is_function(element.removeEventListener) ? 
-                function(f) { element.removeEventListener(event, f) }
-            :
-                ((event = "on" + event) && function(f) { if(element[event] === f) delete element[event] })
-};
-
-function SimpleArray() {
-    var self = this, _length = 0;
-    g_defprop(self, "push", {value: function(element) {
-        self.resize();
-        self[""+_length++] = element;
-        return self;
-    }});
-    g_defprop(self, "resize", {value: function() {
-        var counter = 0;
-        for(var i = 0; i < _length; ++i) {
-            if(Object.hasOwnProperty.call(self, ""+i)) {
-                self[""+counter++] = self[i];
-            }
-        }
-        // Clean up the offset.
-        for(i = counter; i < _length; ++i) delete self[i]
-        _length = counter;
-        return self;
-    }});
-    g_defprop(self, "clear", {value: function() {
-        for(var i = _length; i--;) delete self[i]
-        _length = 0;
-        return self;
-    }});
-    g_defprop(self, "length", { get: function(){ return _length }});
-}
-
-//============================================================================================================
-// Actual library.
-//============================================================================================================
+(function(global, g_defhidden, g_defprop, g_doc){
 /**
  * keys([KEY | CODE] [, ELEMENT])
  * 
- * @param key     : Can be either a key or a code. 
+ * @param key     : Can be either a key, code, or a shortcut key. 
  * @param element : The HTML element or any element with the ability to trigger onkeydown or onkeyup.
  * 
- * @return Returns a Key instance that will attach istelf to the element listening for onkey events.
+ * @return Returns a Key instance that will attach itself to the element listening for onkey events.
  */
 function keys(key, element) {
+    if(key === undefined) key = "any";
     var code = keys.tocode(key);
     if(code == undefined) {
         code = keys.shorttocode(key);
@@ -67,7 +20,68 @@ function keys(key, element) {
 
     return new Key(key, code, ((element instanceof Object) ? element : g_doc));
 }
-// Data mappings
+keys.__classes__ = {};
+
+//============================================================================================================
+// Helpful functions.
+//============================================================================================================
+// A function used for shortening the character count when detecting when something is a function.
+function is_function(obj) { return obj instanceof Function }
+
+// Creates a function that can attach event handlers to elements.
+function __make_element_event_adder__(event, element) {
+    return is_function(element.addEventListener) ? 
+                function(f) { element.addEventListener(event, f) }
+            :
+                ((event = "on" + event) && function(f) { element[event] = f })
+};
+// Creates a function that can detach event handlers to elements.
+function __make_element_event_remover__(event, element) {
+    return is_function(element.removeEventListener) ? 
+                function(f) { element.removeEventListener(event, f) }
+            :
+                ((event = "on" + event) && function(f) { if(element[event] === f) delete element[event] })
+};
+
+/**
+ * Basic array with simple functionalities. These include push, resize, and clear.
+ * The array is used in order to ensure that with all browsers the arrays will work.
+ */
+function SimpleArray() {
+    var _members = {
+        __self__: this,
+        length: 0
+    };
+    g_defhidden(_members.__self__, "push", function(element) {
+        _members.__self__.resize();
+        _members.__self__[""+_members.length++] = element;
+        return _members.__self__;
+    });
+    g_defhidden(_members.__self__, "resize", function() {
+        var counter = 0;
+        for(var i = 0; i < _members.length; ++i) {
+            if((""+i) in _members.__self__) {
+                _members.__self__[""+counter++] = _members.__self__[i];
+            }
+        }
+        // Clean up the offset.
+        for(i = counter; i < _members.length; ++i) delete _members.__self__[i]
+        _members.length = counter;
+        return _members.__self__;
+    });
+    g_defhidden(_members.__self__, "clear", function() {
+        for(var i = _members.length; i--;) delete _members.__self__[i]
+        _members.length = 0;
+        return _members.__self__;
+    });
+    g_defhidden(_members.__self__, "length", function(){ return _members.length });
+};
+keys.__classes__.SimpleArray = SimpleArray;
+
+//============================================================================================================
+// Actual library.
+//============================================================================================================
+// Mappings for keys, codes, and shortcuts.
 keys.__key_code_to_key__ = {};
 keys.__key_to_key_code__ = {};
 keys.__key_code_to_short__ = {};
@@ -76,7 +90,7 @@ keys.__short_to_key_code__ = {};
 // Used for detecting general keyboard events.
 keys.__raw_data__ = {};
 
-// Plugin calls.
+// Handles plugin calls.
 keys.__plugins__ = {
     __process_plugins_on__: function(plugins, members) { 
         for(var plugin in plugins) plugins[plugin](members)
@@ -85,23 +99,39 @@ keys.__plugins__ = {
     __key_plugins__: new SimpleArray()
 }
 
+/**
+ * A class used to wrap KeyBoardEvents in order to provide the same interface
+ * for all browsers.
+ * 
+ * @param key_members : The members for the Key that created the event.
+ * @param event       : The KeyBoardEvent to wrap.
+ */
 function KeyEvent(key_members, event) {
     var _members = {
         __self__: this,
         __event__: event,
+        __key_members__: key_members,
         code: +(event.which || event.keyCode)
     };
     _members.key = keys.tokey(_members.code);
     _members.short = keys.toshort(_members.code);
 
-    g_defprop(this, "__event__", { value: _members.__event__ });
-    g_defprop(this, "code", { value: _members.code, enumerable: true });
-    g_defprop(this, "key", { value: _members.key, enumerable: true });
-    g_defprop(this, "short", { value: _members.short, enumerable: true });
+    g_defhidden(this, "__event__", _members.__event__);
+    g_defprop(this, "code", _members.code);
+    g_defprop(this, "key", _members.key);
+    g_defprop(this, "short", _members.short);
 
     keys.__plugins__.__process_plugins_on__(keys.__plugins__.__key_event_plugins__, _members);
-}
+};
+keys.__classes__.KeyEvent = KeyEvent;
 
+/**
+ * The class that connects to elements and listens for keyup and keydown events.
+ * 
+ * @param key  : The key for the keyboard to listen to.
+ * @param code : The code for the keyboard to listen to.
+ * @param elem : The element for the Key instance to attach to.
+ */
 function Key(key, code, elem) {
     var _members = {
         __self__: this,
@@ -109,7 +139,7 @@ function Key(key, code, elem) {
         code: code,
         short: keys.toshort(code),
         __element__: elem,
-        isconnected: false,
+        isattached: false,
         isdown: false,
         ispressed: false,
         kevent_down: undefined,
@@ -127,7 +157,26 @@ function Key(key, code, elem) {
         _keyup_element_remover = __make_element_event_remover__("keyup", _members.__element__);
     
     // The event actually connected to the keydown and invokes all of the registered events to the key.
-    function _keydown_event(event) {
+    var _keydown_event = _members.code === -1 ?
+
+    function(event) {
+        var keyevent = new KeyEvent(_members, event);
+        if(_members.isdown) {
+            _members.ispressed = true;
+            _members.kevent_pressed = keyevent;
+            keyevent.type = "keypress";
+            for(var i in _members.events_pressed) _members.events_pressed[i](_members.kevent_pressed);
+        } else {
+            _members.isdown = true;
+            _members.kevent_down = keyevent;
+            keyevent.type = "keydown";
+            for(var i in _members.events_down) _members.events_down[i](_members.kevent_down);
+        }
+    }
+
+    :
+
+    function(event) {
         var keyevent = new KeyEvent(_members, event);
         if(keyevent.code == code) {
             if(_members.isdown) {
@@ -143,8 +192,22 @@ function Key(key, code, elem) {
             }
         }
     };
+
     // The event actually connected to the keyup and invokes all of the registered events to the key.
-    function _keyup_event(event) {
+    var _keyup_event = _members.code === -1 ?
+
+    function(event) {
+        var keyevent = new KeyEvent(_members, event);
+        _members.isdown = false;
+        _members.ispressed = false;
+        _members.kevent_up = keyevent;
+        keyevent.type = "keyup";
+        for(var i in _members.events_up) _members.events_up[i](_members.kevent_up);
+    }
+
+    :
+
+    function(event) {
         var keyevent = new KeyEvent(_members, event);
         if(keyevent.code == code) {
             _members.isdown = false;
@@ -155,51 +218,33 @@ function Key(key, code, elem) {
         }
     };
         
-    g_defprop(_members.__self__, "connect", { 
-        value: function() {
-            if(!_members.isconnected) {
+    g_defprop(_members.__self__, "attach",
+        function() {
+            if(!_members.isattached) {
                 _keydown_element_adder(_keydown_event);
                 _keyup_element_adder(_keyup_event);
-                _members.isconnected = true;
+                _members.isattached = true;
             }
             return _members.__self__; 
-        },
-        enumerable: true
-    });    
-    g_defprop(_members.__self__, "disconnect", { 
-        value: function() {
-            if(_members.isconnected) {
+        });    
+    g_defprop(_members.__self__, "detach",
+        function() {
+            if(_members.isattached) {
                 _keydown_element_remover(_keydown_event);
                 _keyup_element_remover(_keyup_event);
-                _members.isconnected = false;
+                _members.isattached = false;
             }
             return _members.__self__;
-        },
-        enumerable: true
-    });
+        });
 
-    g_defprop(_members.__self__, "__self__", { value: _members.__self__ });
-    g_defprop(_members.__self__, "key", { value: _members.key, enumerable: true });
-    g_defprop(_members.__self__, "code", { value: _members.code, enumerable: true });
-    g_defprop(_members.__self__, "short", { value: _members.short, enumerable: true });
+    g_defprop(_members.__self__, "key", _members.key);
+    g_defprop(_members.__self__, "code", _members.code);
+    g_defprop(_members.__self__, "short", _members.short);
     
-    g_defprop(_members.__self__, "isconnected", {
-        get: function() { return _members.isconnected },
-        enumerable: true
-    });
-
-    g_defprop(_members.__self__, "isdown", {
-        get: function() { return _members.isdown },
-        enumerable: true
-    });
-    g_defprop(_members.__self__, "ispressed", {
-        get: function() { return _members.ispressed },
-        enumerable: true
-    });
-    g_defprop(_members.__self__, "isup", {
-        get: function() { return !_members.isdown },
-        enumerable: true
-    });
+    g_defprop(_members.__self__, "isattached", function() { return _members.isattached });
+    g_defprop(_members.__self__, "isdown", function() { return _members.isdown });
+    g_defprop(_members.__self__, "ispressed", function() { return _members.ispressed });
+    g_defprop(_members.__self__, "isup", function() { return !_members.isdown });
     
     function onkeydown(f) {
         if(is_function(f)) {
@@ -208,7 +253,7 @@ function Key(key, code, elem) {
         }
         return _members.__self__;
     };
-    g_defprop(onkeydown, "add", { value: function(f) {
+    g_defhidden(onkeydown, "add", function(f) {
         if(is_function(f)) {
             for(var i in _members.events_down) 
                 if(f === _members.events_down[i])
@@ -216,8 +261,8 @@ function Key(key, code, elem) {
             _members.events_down.push(f);
         }
         return _members.__self__;
-    }});
-    g_defprop(onkeydown, "remove", { value: function(f) {
+    });
+    g_defhidden(onkeydown, "remove", function(f) {
         if(f === undefined) {
             _members.events_down.clear()
         }
@@ -228,8 +273,8 @@ function Key(key, code, elem) {
             }
         }
         return _members.__self__;
-    }});
-    g_defprop(_members.__self__, "onkeydown", { value: onkeydown, enumerable: true });
+    });
+    g_defprop(_members.__self__, "onkeydown", onkeydown);
     
     function onkeypress(f) {
         if(is_function(f)) {
@@ -238,7 +283,7 @@ function Key(key, code, elem) {
         }
         return _members.__self__;
     };
-    g_defprop(onkeypress, "add", { value: function(f) {
+    g_defhidden(onkeypress, "add", function(f) {
         if(is_function(f)) {
             for(var i in _members.events_pressed) 
                 if(f === _members.events_pressed[i])
@@ -246,8 +291,8 @@ function Key(key, code, elem) {
             _members.events_pressed.push(f);
         }
         return _members.__self__;
-    }});
-    g_defprop(onkeypress, "remove", { value: function(f) {
+    });
+    g_defhidden(onkeypress, "remove", function(f) {
         if(f === undefined) {
             _members.events_pressed.clear()
         }
@@ -258,8 +303,8 @@ function Key(key, code, elem) {
             }
         }
         return _members.__self__;
-    }});
-    g_defprop(_members.__self__, "onkeypress", { value: onkeypress, enumerable: true });
+    });
+    g_defprop(_members.__self__, "onkeypress", onkeypress);
     
     function onkeyup(f) {
         if(is_function(f)) {
@@ -269,7 +314,7 @@ function Key(key, code, elem) {
         return _members.__self__;
     };
     
-    g_defprop(onkeyup, "add", { value: function(f) {
+    g_defhidden(onkeyup, "add", function(f) {
         if(is_function(f)) {
             for(var i in _members.events_up) 
                 if(f === _members.events_up[i])
@@ -277,8 +322,8 @@ function Key(key, code, elem) {
             _members.events_up.push(f);
         }
         return _members.__self__;
-    }});
-    g_defprop(onkeyup, "remove", { value: function(f) {
+    });
+    g_defhidden(onkeyup, "remove", function(f) {
         if(f === undefined) {
             _members.events_up.clear()
         }
@@ -289,15 +334,16 @@ function Key(key, code, elem) {
             }
         }
         return _members.__self__;
-    }});
+    });
     
-    g_defprop(_members.__self__, "onkeyup", { value: onkeyup, enumerable: true });
+    g_defprop(_members.__self__, "onkeyup", onkeyup);
 
     keys.__plugins__.__process_plugins_on__(keys.__plugins__.__key_plugins__, _members);
-}
+};
+keys.__classes__.Key = Key;
 
 //============================================================================================================
-// Key Mappings
+// Start: Key Mappings
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
 // Keys and Codes
@@ -342,10 +388,10 @@ keys.__key_code_to_key__[55] = "seven";
 keys.__key_code_to_key__[56] = "eight";
 keys.__key_code_to_key__[57] = "nine";
 
-keys.__key_code_to_key__[96] = "numpad_zero";
-keys.__key_code_to_key__[97] = "numpad_one";
-keys.__key_code_to_key__[98] = "numpad_two";
-keys.__key_code_to_key__[99] = "numpad_three";
+keys.__key_code_to_key__[096] = "numpad_zero";
+keys.__key_code_to_key__[097] = "numpad_one";
+keys.__key_code_to_key__[098] = "numpad_two";
+keys.__key_code_to_key__[099] = "numpad_three";
 keys.__key_code_to_key__[100] = "numpad_four";
 keys.__key_code_to_key__[101] = "numpad_five";
 keys.__key_code_to_key__[102] = "numpad_six";
@@ -354,6 +400,8 @@ keys.__key_code_to_key__[104] = "numpad_eight";
 keys.__key_code_to_key__[105] = "numpad_nine";
 
 // Other
+keys.__key_code_to_key__[-1] = "any";
+
 keys.__key_code_to_key__[08] = "backspace";
 keys.__key_code_to_key__[09] = "tab";
 keys.__key_code_to_key__[13] = "enter";
@@ -363,6 +411,7 @@ keys.__key_code_to_key__[18] = "alt";
 keys.__key_code_to_key__[19] = "pause_break";
 keys.__key_code_to_key__[20] = "caps_lock";
 keys.__key_code_to_key__[27] = "escape";
+keys.__key_code_to_key__[32] = "space";
 keys.__key_code_to_key__[33] = "page_up";
 keys.__key_code_to_key__[34] = "page_down";
 keys.__key_code_to_key__[35] = "end"; 
@@ -450,6 +499,8 @@ for(var i = 10; i--;) {
 }
 
 // Other
+keys.__key_code_to_short__[-1] = "";
+
 keys.__key_code_to_short__[08] = "bsp";
 keys.__key_code_to_short__[09] = "tab";
 keys.__key_code_to_short__[13] = "ent";
@@ -459,8 +510,9 @@ keys.__key_code_to_short__[18] = "alt";
 keys.__key_code_to_short__[19] = "pbk";
 keys.__key_code_to_short__[20] = "clok";
 keys.__key_code_to_short__[27] = "esc";
+keys.__key_code_to_short__[32] = " ";
 keys.__key_code_to_short__[33] = "pup";
-keys.__key_code_to_short__[34] = "pwn";
+keys.__key_code_to_short__[34] = "pdn";
 keys.__key_code_to_short__[35] = "end"; 
 keys.__key_code_to_short__[36] = "home";
 keys.__key_code_to_short__[45] = "ins";
@@ -470,9 +522,9 @@ keys.__key_code_to_short__[92] = "rwk";
 keys.__key_code_to_short__[93] = "slk";
 
 // Directions
-keys.__key_code_to_short__[37] = "<-";
+keys.__key_code_to_short__[37] = "<";
 keys.__key_code_to_short__[38] = "^";
-keys.__key_code_to_short__[39] = "->";
+keys.__key_code_to_short__[39] = ">";
 keys.__key_code_to_short__[40] = "V";
 
 keys.__key_code_to_short__[106] = "n*";
@@ -509,18 +561,27 @@ keys.__key_code_to_short__[222] = "'"
 // Flip the mapping...
 for(var keyCode in keys.__key_code_to_short__)
     keys.__short_to_key_code__[keys.__key_code_to_short__[keyCode]] = +keyCode;
+//============================================================================================================
+// End: Key Mappings
+//============================================================================================================
 
 //============================================================================================================
-// Utilities for gernal use.
+// Start: Utilities for general use.
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
 // Used for general data collection.
 
-g_doc.addEventListener("keydown", function(event){
+var add_to_keydown_document = __make_element_event_adder__("keydown", g_doc),
+    add_to_keyup_document   = __make_element_event_adder__("keyup", g_doc)
+
+add_to_keydown_document(function(event){
     var code = event.which || event.keyCode;
-    keys.__raw_data__[code] = true;
+    if(!keys.__raw_data__[code])
+        keys.__raw_data__[code] = 1;
+    else
+        keys.__raw_data__[code] = 2;
 });
-g_doc.addEventListener("keyup", function(event){
+add_to_keyup_document(function(event){
     var code = event.which || event.keyCode;
     delete keys.__raw_data__[code];
 });
@@ -528,53 +589,58 @@ g_doc.addEventListener("keyup", function(event){
 //------------------------------------------------------------------------------------------------------------
 // Utility functions
 
-g_defprop(keys, "isdown", {
-    value: function(key){ return !!keys.__raw_data__[keys.__key_to_key_code__[key]]; },
-    enumerable: true
-});
-g_defprop(keys, "isup", { 
-    value: function(key){ return !keys.__raw_data__[keys.__key_to_key_code__[key]]; },
-    enumerable: true
-});
-g_defprop(keys, "tocode", { 
-    value: function(key){ return keys.__key_to_key_code__[key]; },
-    enumerable: true
-});
-g_defprop(keys, "tokey", { 
-    value: function(code){ return keys.__key_code_to_key__[+code]; },
-    enumerable: true
-});
-g_defprop(keys, "toshort", { 
-    value: function(code){ 
-        return keys.__key_code_to_short__[+code] || 
-            // Else assume it is a key.
-            keys.__key_code_to_short__[keys.tocode(code)];
-    },
-    enumerable: true
-});
-g_defprop(keys, "shorttocode", { 
-    value: function(short){ 
-        return keys.__short_to_key_code__[short];
-    },
-    enumerable: true
-});
+g_defprop(keys, "isdown", function(key){ return keys.__raw_data__[keys.__key_to_key_code__[key]] === 1; });
+g_defprop(keys, "ispressed", function(key){ return keys.__raw_data__[keys.__key_to_key_code__[key]] === 2; });
+g_defprop(keys, "isup", function(key){ return !keys.__raw_data__[keys.__key_to_key_code__[key]]; });
+g_defprop(keys, "tocode", function(key){ return keys.__key_to_key_code__[key]; });
+g_defprop(keys, "tokey", function(code){ return keys.__key_code_to_key__[+code]; });
+g_defprop(keys, "toshort",
+    function(code){ 
+        var r = keys.__key_code_to_short__[+code];
+        // If the code did not provide the correct short then assume the code is a key.
+        return r === undefined ? keys.__key_code_to_short__[keys.tocode(code)] : r;
+    });
+g_defprop(keys, "shorttocode", function(short){ return keys.__short_to_key_code__[short] });
 
-g_defprop(keys, "plugin", { value: function(type, f) {
+/**
+ * Used to add plug-ins to keys.js. These functions added in will receive
+ * a private variable that contains all of the members and private variables
+ * used for that instance.
+ * 
+ * @param type : The type of component to plug-in the function to. ("Key", "KeyEvent")
+ * @param f    : The function to be called when the instance is created.
+ */
+g_defprop(keys, "plugin", function(type, f) {
     if(is_function(f)) {
         if((type += "") === "KeyEvent") {
             keys.__plugins__.__key_event_plugins__.push(f);
-        } 
+        }
         else if(type === "Key") {
             keys.__plugins__.__key_plugins__.push(f);
         }
     }
     return keys;
-}, enumerable: true});
+});
 
 //------------------------------------------------------------------------------------------------------------
+// Needed to help determine what version of keys.js is being used.
+g_defhidden(keys, "__version__" , "1.0.0" )
 
-g_defprop(keys, "__version__" , { value: "1.0.0" })
+// Attaches the keys function to the global space in order to be used.
+g_defprop(global, "keys", keys);
+//============================================================================================================
+// Start Utilities for general use.
+//============================================================================================================
 
-g_defprop(global, "keys", { value: keys });
+})(this, 
+    Object.defineProperty ?
+    function(object, prop, value) { Object.defineProperty(object, prop, {value:value}) }
+    :
+    function(object, prop, value) { object[prop] = value }
+,
+   Object.defineProperty ?
+    function(object, prop, value) { Object.defineProperty(object, prop, {value:value, enumerable:true}) }
+    :
+    function(object, prop, value) { object[prop] = value }
 
-})(this, Object.defineProperty, document)
+, document)
