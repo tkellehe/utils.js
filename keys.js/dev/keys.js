@@ -590,22 +590,31 @@ add_to_keyup_document(function(event){
 g_defprop(keys, "isdown", function(key){ return keys.__raw_data__[keys.__key_to_key_code__[key]] === 1; });
 g_defprop(keys, "ispressed", function(key){ return keys.__raw_data__[keys.__key_to_key_code__[key]] === 2; });
 g_defprop(keys, "isup", function(key){ return !keys.__raw_data__[keys.__key_to_key_code__[key]]; });
-g_defprop(keys, "tocode", function(key){ 
-    var code = keys.__key_to_key_code__[key];
-    return code === undefined ? keys.__short_to_key_code__[key] : code;
+// These need to be fixed using the is...
+g_defprop(keys, "tocode", function(key){
+    if(keys.iskey(key))
+        return +keys.__key_to_key_code__[key];
+    else if(keys.isshort(key))
+        return +keys.__short_to_key_code__[key];
 });
 g_defprop(keys, "tokey", function(code){ 
-    var key = keys.__key_code_to_key__[+code];
-    return key === undefined ? keys.__key_code_to_key__[keys.tocode(code)] : key;
+    if(keys.iscode(code))
+        return keys.__key_code_to_key__[code];
+    else if(keys.isshort(code))
+        return keys.__key_code_to_key__[keys.tocode(code)];
 });
 g_defprop(keys, "toshort", function(code){ 
-    var short = keys.__key_code_to_short__[+code];
-    // If the code did not provide the correct short then assume the code is a key.
-    return short === undefined ? keys.__key_code_to_short__[keys.tocode(code)] : r;
+    if(keys.iscode(code))
+        return keys.__key_code_to_short__[code];
+    else if(keys.iskey(code))
+        return keys.__key_code_to_short__[keys.tocode(code)];
 });
-g_defprop(keys, "iscode", function(key){ return keys.tocode(key) !== undefined; });
-g_defprop(keys, "iskey", function(code){ return keys.tokey(code) !== undefined; });
-g_defprop(keys, "isshort", function(code){ return keys.toshort(code) !== undefined; });
+g_defprop(keys, "cancode", function(key){ return keys.tocode(key) !== undefined; });
+g_defprop(keys, "cankey", function(code){ return keys.tokey(code) !== undefined; });
+g_defprop(keys, "canshort", function(code){ return keys.toshort(code) !== undefined; });
+g_defprop(keys, "iscode", function(code){ return keys.__key_code_to_key__[code] !== undefined; });
+g_defprop(keys, "iskey", function(key){ return keys.__key_to_key_code__[key] !== undefined; });
+g_defprop(keys, "isshort", function(short){ return keys.__short_to_key_code__[short] !== undefined; });
 
 /**
  * Used to add plug-ins to keys.js. These functions added in will receive
