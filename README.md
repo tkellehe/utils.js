@@ -16,10 +16,10 @@ Each tool is created with three different files.
 ## Current Tools
 The current tools being worked on are:
 
-[keys.js](http://tkellehe.github.io/utils.js/keys.js/dev/keys.js)
-
 ***
 ###keys.js
+
+[keys.js](http://tkellehe.github.io/utils.js/keys.js/dev/keys.js)
 
 __keys.js__ provides a simple low-level interface for keyboard events. The concept is to create objects that manage
 an individual connection to a particular key.
