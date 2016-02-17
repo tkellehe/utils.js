@@ -180,12 +180,12 @@ function Key(key, code, elem) {
             _members.ispressed = true;
             _members.kevent_pressed = keyevent;
             keyevent.type = "keypress";
-            _members.events_pressed.forloop(function(_, i){i(_members.kevent_pressed)});
+            _members.events_pressed.forloop(function(_, i){i.apply(_members.__self__, [_members.kevent_pressed])});
         } else {
             _members.isdown = true;
             _members.kevent_down = keyevent;
             keyevent.type = "keydown";
-            _members.events_down.forloop(function(_, i){i(_members.kevent_down)});
+            _members.events_down.forloop(function(_, i){i.apply(_members.__self__, [_members.kevent_down])});
         }
     }
 
@@ -198,12 +198,12 @@ function Key(key, code, elem) {
                 _members.ispressed = true;
                 _members.kevent_pressed = keyevent;
                 keyevent.type = "keypress";
-                _members.events_pressed.forloop(function(_, i){i(_members.kevent_pressed)});
+                _members.events_pressed.forloop(function(_, i){i.apply(_members.__self__, [_members.kevent_pressed])});
             } else {
                 _members.isdown = true;
                 _members.kevent_down = keyevent;
                 keyevent.type = "keydown";
-                _members.events_down.forloop(function(_, i){i(_members.kevent_down)});
+                _members.events_down.forloop(function(_, i){i.apply(_members.__self__, [_members.kevent_down])});
             }
         }
     };
@@ -217,7 +217,7 @@ function Key(key, code, elem) {
         _members.ispressed = false;
         _members.kevent_up = keyevent;
         keyevent.type = "keyup";
-        _members.events_up.forloop(function(_, i){i(_members.kevent_up)});
+        _members.events_up.forloop(function(_, i){i.apply(_members.__self__, [_members.kevent_up])});
     }
 
     :
@@ -229,7 +229,7 @@ function Key(key, code, elem) {
             _members.ispressed = false;
             _members.kevent_up = keyevent;
             keyevent.type = "keyup";
-            _members.events_up.forloop(function(_, i){i(_members.kevent_up)});
+            _members.events_up.forloop(function(_, i){i.apply(_members.__self__, [_members.kevent_up])});
         }
     };
         
