@@ -1,6 +1,6 @@
-(function(global, g_defhidden, g_defprop, g_doc){
+(function(global, g_defhidden, g_defprop, g_doc) {
 /**
- * keys([KEY | CODE] [, ELEMENT])
+ * keys([KEY | SHORT | CODE] [, ELEMENT])
  * 
  * @param key     : Can be either a key, code, or a shortcut key. 
  * @param element : The HTML element or any element with the ability to trigger onkeydown or onkeyup.
@@ -18,6 +18,7 @@ function keys(key, element) {
 
     return new Key(keys.tokey(code), code, ((element instanceof Object) ? element : g_doc));
 }
+// Stores all of the classes used in keys.js.
 keys.__classes__ = {};
 
 //============================================================================================================
@@ -74,6 +75,22 @@ function SimpleArray() {
     });
     g_defhidden(_members.__self__, "length", function(){ return _members.length });
 };
+/**
+ * simplearray.forloop(function(i, elem, array){ console.log(array[i], elem) });
+ * Essentially calls the function "length" times passing in the index, the element, and the array.
+ * Also, resizes before running the loop.
+ * 
+ * @param f : A function to be called "length" times.
+ */
+SimpleArray.prototype.forloop = function(f) {
+    if(is_function(f)) {
+        this.resize();
+        var index = 0;
+        while(index < this.length()) f(index, this[index++], this);
+    }
+    return this;
+};
+
 keys.__classes__.SimpleArray = SimpleArray;
 
 //============================================================================================================
@@ -91,7 +108,7 @@ keys.__raw_data__ = {};
 // Handles plugin calls.
 keys.__plugins__ = {
     __process_plugins_on__: function(plugins, members) { 
-        for(var plugin in plugins) plugins[plugin](members)
+        plugins.forloop(function(i, plugin) { plugin(members); });
     },
     __key_event_plugins__: new SimpleArray(),
     __key_plugins__: new SimpleArray()
@@ -163,12 +180,12 @@ function Key(key, code, elem) {
             _members.ispressed = true;
             _members.kevent_pressed = keyevent;
             keyevent.type = "keypress";
-            for(var i in _members.events_pressed) _members.events_pressed[i](_members.kevent_pressed);
+            _members.events_pressed.forloop(function(_, i){i(_members.kevent_pressed)});
         } else {
             _members.isdown = true;
             _members.kevent_down = keyevent;
             keyevent.type = "keydown";
-            for(var i in _members.events_down) _members.events_down[i](_members.kevent_down);
+            _members.events_down.forloop(function(_, i){i(_members.kevent_down)});
         }
     }
 
@@ -181,12 +198,12 @@ function Key(key, code, elem) {
                 _members.ispressed = true;
                 _members.kevent_pressed = keyevent;
                 keyevent.type = "keypress";
-                for(var i in _members.events_pressed) _members.events_pressed[i](_members.kevent_pressed);
+                _members.events_pressed.forloop(function(_, i){i(_members.kevent_pressed)});
             } else {
                 _members.isdown = true;
                 _members.kevent_down = keyevent;
                 keyevent.type = "keydown";
-                for(var i in _members.events_down) _members.events_down[i](_members.kevent_down);
+                _members.events_down.forloop(function(_, i){i(_members.kevent_down)});
             }
         }
     };
@@ -200,7 +217,7 @@ function Key(key, code, elem) {
         _members.ispressed = false;
         _members.kevent_up = keyevent;
         keyevent.type = "keyup";
-        for(var i in _members.events_up) _members.events_up[i](_members.kevent_up);
+        _members.events_up.forloop(function(_, i){i(_members.kevent_up)});
     }
 
     :
@@ -212,7 +229,7 @@ function Key(key, code, elem) {
             _members.ispressed = false;
             _members.kevent_up = keyevent;
             keyevent.type = "keyup";
-            for(var i in _members.events_up) _members.events_up[i](_members.kevent_up);
+            _members.events_up.forloop(function(_, i){i(_members.kevent_up)});
         }
     };
         
@@ -265,9 +282,12 @@ function Key(key, code, elem) {
             _members.events_down.clear()
         }
         else if(is_function(f)) {
-            for(var i = _members.events_down.length; i--;) if(_members.events_down[i] === f) {
-                delete _members.events_down[i];
-                break;
+            for(var i = _members.events_down.length(); i--;) {
+                if(_members.events_down[i] === f) {
+                    delete _members.events_down[i];
+                    _members.events_down.resize();
+                    break;
+                }
             }
         }
         return _members.__self__;
@@ -295,9 +315,12 @@ function Key(key, code, elem) {
             _members.events_pressed.clear()
         }
         else if(is_function(f)) {
-            for(var i = _members.events_pressed.length; i--;) if(_members.events_pressed[i] === f) {
-                delete _members.events_pressed[i];
-                break;
+            for(var i = _members.events_pressed.length(); i--;) {
+                if(_members.events_pressed[i] === f) {
+                    delete _members.events_pressed[i];
+                    _members.events_pressed.resize();
+                    break;
+                }
             }
         }
         return _members.__self__;
@@ -326,9 +349,12 @@ function Key(key, code, elem) {
             _members.events_up.clear()
         }
         else if(is_function(f)) {
-            for(var i = _members.events_up.length; i--;) if(_members.events_up[i] === f) {
-                delete _members.events_up[i];
-                break;
+            for(var i = _members.events_up.length(); i--;) {
+                if(_members.events_up[i] === f) {
+                    delete _members.events_up[i];
+                    _members.events_up.resize();
+                    break;
+                }
             }
         }
         return _members.__self__;

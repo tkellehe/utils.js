@@ -1,0 +1,95 @@
+<p id="disp"></p>
+
+<input id="element" width="32em"></input>
+
+<script src="../dev/keys.js"></script>
+
+<script>
+
+console.disp = function(message) {
+    document.getElementById("disp").innerHTML = message;
+}
+console.rdisp = function(message) {
+    document.getElementById("disp").innerHTML += message;
+}
+
+function test_any() {
+    var any = keys();
+    any.onkeydown(function(kevent){
+        console.disp("down: " + kevent.key);
+    });
+    any.onkeypress(function(kevent){
+        console.disp("press: " + kevent.key);
+    });
+    any.onkeyup(function(kevent){
+        console.disp("up: " + kevent.key);
+    });
+    any.attach();
+};
+
+function test_any_element() {
+    var any = keys("", document.getElementById("element"));
+    any.onkeydown(function(kevent){
+        console.disp("down: " + kevent.key);
+    });
+    any.onkeypress(function(kevent){
+        console.disp("press: " + kevent.key);
+    });
+    any.onkeyup(function(kevent){
+        console.disp("up: " + kevent.key);
+    });
+    any.attach();
+};
+
+function test_attach_detach() {
+    var any = keys("any", document.getElementById("element"));
+    any.onkeydown(function(kevent){
+        console.disp("down: " + kevent.key);
+    });
+    any.onkeypress(function(kevent){
+        console.disp("press: " + kevent.key);
+    });
+    any.onkeyup(function(kevent){
+        console.disp("up: " + kevent.key);
+        if(kevent.key == "space")
+            any.detach();
+    });
+    any.attach();
+};
+
+function test_multiple_add() {
+    var a = keys("a");
+    a.onkeydown.add(function(){console.rdisp("0")});
+    a.onkeydown.add(function(){console.rdisp("1")});
+    a.onkeydown.add(function(){console.rdisp("2")});
+    a.onkeyup(function(){console.disp("")});
+    a.attach();
+};
+
+function test_multiple_add_remove() {
+    var a = keys("a"),
+    zero = function(){console.rdisp("0")},
+    one = function(){console.rdisp("1")},
+    two = function(){console.rdisp("2")};
+    a.onkeydown.add(zero);
+    a.onkeydown.add(one);
+    a.onkeydown.add(two);
+    a.onkeydown.remove(one);
+    a.onkeyup(function(){console.disp("")});
+    a.attach();
+};
+
+function test_multiple_add_remove_all_one() {
+    var a = keys("a"),
+    zero = function(){console.rdisp("0")},
+    one = function(){console.rdisp("1")},
+    two = function(){console.rdisp("2")};
+    a.onkeydown.add(zero);
+    a.onkeydown.add(one);
+    a.onkeydown.add(two);
+    a.onkeydown(one);
+    a.onkeyup(function(){console.disp("")});
+    a.attach();
+};
+
+</script>
