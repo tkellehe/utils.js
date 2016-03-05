@@ -19,7 +19,7 @@ function BasicSet() {
         __map__    : {}
     };
 
-    g_defprop(self, "add", {value:function(elem){
+    g_defhidden(self, "add", {value:function(elem){
         if(!_members.__map__.hasOwnProperty(elem))
         {
             _members.__map__[elem] = _members.__length__++;
@@ -44,4 +44,4 @@ g_defprop(global, "BasicSet", BasicSet);
     :
     function(object, prop, value) { object[prop] = value }
 
-);
+)
