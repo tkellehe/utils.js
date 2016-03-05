@@ -19,7 +19,7 @@ function keys(key, element) {
     return new Key(keys.tokey(code), code, ((element instanceof Object) ? element : g_doc));
 }
 // Stores all of the classes used in keys.js.
-keys.__classes__ = {};
+g_defhidden(keys, "__classes__", {});
 
 //============================================================================================================
 // Helpful functions.
@@ -82,14 +82,14 @@ function SimpleArray() {
  * 
  * @param f : A function to be called "length" times.
  */
-SimpleArray.prototype.forloop = function(f) {
+g_defprop(SimpleArray.prototype, "forloop", function(f) {
     if(is_function(f)) {
         this.resize();
         var index = 0;
         while(index < this.length()) f(index, this[index++], this);
     }
     return this;
-};
+});
 
 keys.__classes__.SimpleArray = SimpleArray;
 
@@ -97,22 +97,22 @@ keys.__classes__.SimpleArray = SimpleArray;
 // Actual library.
 //============================================================================================================
 // Mappings for keys, codes, and shortcuts.
-keys.__key_code_to_key__ = {};
-keys.__key_to_key_code__ = {};
-keys.__key_code_to_short__ = {};
-keys.__short_to_key_code__ = {};
+g_defhidden(keys, "__key_code_to_key__", {});
+g_defhidden(keys, "__key_to_key_code__", {});
+g_defhidden(keys, "__key_code_to_short__", {});
+g_defhidden(keys, "__short_to_key_code__", {});
 
 // Used for detecting general keyboard events.
-keys.__raw_data__ = {};
+g_defhidden(keys, "__raw_data__", {});
 
 // Handles plugin calls.
-keys.__plugins__ = {
+g_defhidden(keys, "__plugins__", {
     __process_plugins_on__: function(plugins, members) { 
         plugins.forloop(function(i, plugin) { plugin(members); });
     },
     __key_event_plugins__: new SimpleArray(),
     __key_plugins__: new SimpleArray()
-}
+});
 
 /**
  * A class used to wrap KeyBoardEvents in order to provide the same interface
@@ -268,7 +268,7 @@ function Key(key, code, elem) {
         }
         return _members.__self__;
     };
-    g_defhidden(onkeydown, "add", function(f) {
+    g_defprop(onkeydown, "add", function(f) {
         if(is_function(f)) {
             for(var i in _members.events_down) 
                 if(f === _members.events_down[i])
@@ -277,7 +277,7 @@ function Key(key, code, elem) {
         }
         return _members.__self__;
     });
-    g_defhidden(onkeydown, "remove", function(f) {
+    g_defprop(onkeydown, "remove", function(f) {
         if(f === undefined) {
             _members.events_down.clear()
         }
@@ -301,7 +301,7 @@ function Key(key, code, elem) {
         }
         return _members.__self__;
     };
-    g_defhidden(onkeypress, "add", function(f) {
+    g_defprop(onkeypress, "add", function(f) {
         if(is_function(f)) {
             for(var i in _members.events_pressed) 
                 if(f === _members.events_pressed[i])
@@ -310,7 +310,7 @@ function Key(key, code, elem) {
         }
         return _members.__self__;
     });
-    g_defhidden(onkeypress, "remove", function(f) {
+    g_defprop(onkeypress, "remove", function(f) {
         if(f === undefined) {
             _members.events_pressed.clear()
         }
@@ -335,7 +335,7 @@ function Key(key, code, elem) {
         return _members.__self__;
     };
     
-    g_defhidden(onkeyup, "add", function(f) {
+    g_defprop(onkeyup, "add", function(f) {
         if(is_function(f)) {
             for(var i in _members.events_up) 
                 if(f === _members.events_up[i])
@@ -344,7 +344,7 @@ function Key(key, code, elem) {
         }
         return _members.__self__;
     });
-    g_defhidden(onkeyup, "remove", function(f) {
+    g_defprop(onkeyup, "remove", function(f) {
         if(f === undefined) {
             _members.events_up.clear()
         }
