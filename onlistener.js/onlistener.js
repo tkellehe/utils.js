@@ -42,15 +42,16 @@ function _add_addEventListener(onevent, obj) {
             return obj;
         }
     }
-    g_defprop(obj, "addEventListener", function(f) {
-        if(is_func(f))
+    g_defprop(obj, "addEventListener", function(oe, f) {
+        if(is_func(f) && obj.hasOwnProperty(oe = to_string(oe)) 
+            && is_func(obj[oe]) && obj[oe].hasOwnProperty("__events__"))
         {
-            for(var i = 0, l = obj[onevent].__events__.length(); i < l; ++i)
+            for(var i = 0, l = obj[oe].__events__.length(); i < l; ++i)
             {
-                if(obj[onevent].__events__[i] === f)
+                if(obj[oe].__events__[i] === f)
                     return f;
             }
-            obj[onevent].__events__.push(f);
+            obj[oe].__events__.push(f);            
         }
         return f;
     });
@@ -68,13 +69,14 @@ function _add_removeEventListener(onevent, obj) {
             return obj;
         }
     }
-    g_defprop(obj, "removeEventListener", function(f) {
-        if(is_func(f))
+    g_defprop(obj, "removeEventListener", function(oe, f) {
+        if(is_func(f) && obj.hasOwnProperty(oe = to_string(oe)) 
+            && is_func(obj[oe]) && obj[oe].hasOwnProperty("__events__"))
         {
-            for(var i = 0, l = obj[onevent].__events__.length(); i < l; ++i)
+            for(var i = 0, l = obj[oe].__events__.length(); i < l; ++i)
             {
-                if(obj[onevent].__events__[i] === f) {
-                    obj[onevent].__events__.remove(i);
+                if(obj[oe].__events__[i] === f) {
+                    obj[oe].__events__.remove(i);
                     return f;
                 }
             }
