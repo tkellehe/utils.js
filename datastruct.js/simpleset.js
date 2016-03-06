@@ -1,9 +1,9 @@
 (function(global, g_defhidden, g_defprop) {
 
 /**
- * var s = new BasicSet();
+ * var s = new SimpleSet();
  * 
- * Every item added will be given and index to the BasicSet.
+ * Every item added will be given and index to the SimpleSet.
  * This allows users to loop through all of the entries.
  * 
  * Adding a string/number that has already been added will be ignored.
@@ -12,7 +12,7 @@
  * 
  * When adding, the index where the element was added will be returned.
  */
-function BasicSet() {
+function SimpleSet() {
     var _members = {
         self       : this,
         __length__ : 0,
@@ -29,9 +29,9 @@ function BasicSet() {
     }});
 }
 
-g_defhidden(BasicSet, "__version__", "1.0.0")
+g_defhidden(SimpleSet, "__version__", "1.0.0")
 
-g_defprop(global, "BasicSet", BasicSet);
+g_defprop(global, "SimpleSet", SimpleSet);
 
 })(this,
     Object.defineProperty ?
