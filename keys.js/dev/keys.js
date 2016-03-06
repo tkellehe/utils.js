@@ -1,4 +1,4 @@
-(function(global, g_defhidden, g_defprop, g_doc) {
+(function(global, g_defhidden, g_defprop, g_doc, g_simplearray) {
 /**
  * keys([KEY | SHORT | CODE] [, ELEMENT])
  * 
@@ -25,7 +25,7 @@ g_defhidden(keys, "__classes__", {});
 // Helpful functions.
 //============================================================================================================
 // A function used for shortening the character count when detecting when something is a function.
-function is_function(obj) { return obj instanceof Function }
+function is_function(obj) { return obj instanceof Function };
 
 // Creates a function that can attach event handlers to elements.
 function __make_element_event_adder__(event, element) {
@@ -42,56 +42,7 @@ function __make_element_event_remover__(event, element) {
                 ((event = "on" + event) && function(f) { if(element[event] === f) delete element[event] })
 };
 
-/**
- * Basic array with simple functionalities. These include push, resize, and clear.
- * The array is used in order to ensure that with all browsers the arrays will work.
- */
-function SimpleArray() {
-    var _members = {
-        __self__: this,
-        length: 0
-    };
-    g_defhidden(_members.__self__, "push", function(element) {
-        _members.__self__.resize();
-        _members.__self__[""+_members.length++] = element;
-        return _members.__self__;
-    });
-    g_defhidden(_members.__self__, "resize", function() {
-        var counter = 0;
-        for(var i = 0; i < _members.length; ++i) {
-            if((""+i) in _members.__self__) {
-                _members.__self__[""+counter++] = _members.__self__[i];
-            }
-        }
-        // Clean up the offset.
-        for(i = counter; i < _members.length; ++i) delete _members.__self__[i]
-        _members.length = counter;
-        return _members.__self__;
-    });
-    g_defhidden(_members.__self__, "clear", function() {
-        for(var i = _members.length; i--;) delete _members.__self__[i]
-        _members.length = 0;
-        return _members.__self__;
-    });
-    g_defhidden(_members.__self__, "length", function(){ return _members.length });
-};
-/**
- * simplearray.forloop(function(i, elem, array){ console.log(array[i], elem) });
- * Essentially calls the function "length" times passing in the index, the element, and the array.
- * Also, resizes before running the loop.
- * 
- * @param f : A function to be called "length" times.
- */
-g_defprop(SimpleArray.prototype, "forloop", function(f) {
-    if(is_function(f)) {
-        this.resize();
-        var index = 0;
-        while(index < this.length()) f(index, this[index++], this);
-    }
-    return this;
-});
-
-keys.__classes__.SimpleArray = SimpleArray;
+keys.__classes__.SimpleArray = g_simplearray;
 
 //============================================================================================================
 // Actual library.
@@ -110,8 +61,8 @@ g_defhidden(keys, "__plugins__", {
     __process_plugins_on__: function(plugins, members) { 
         plugins.forloop(function(i, plugin) { plugin(members); });
     },
-    __key_event_plugins__: new SimpleArray(),
-    __key_plugins__: new SimpleArray()
+    __key_event_plugins__: new g_simplearray(),
+    __key_plugins__: new g_simplearray()
 });
 
 /**
@@ -160,9 +111,9 @@ function Key(key, code, elem) {
         kevent_down: undefined,
         kevent_pressed: undefined,
         kevent_up: undefined,
-        events_down: new SimpleArray(),
-        events_pressed: new SimpleArray(),
-        events_up: new SimpleArray()
+        events_down: new g_simplearray(),
+        events_pressed: new g_simplearray(),
+        events_up: new g_simplearray()
     };
     
     // Used for connecting and disconnecting to the element.
@@ -683,4 +634,5 @@ g_defprop(global, "keys", keys);
     :
     function(object, prop, value) { object[prop] = value }
 
-, document)
+, document
+, SimpleArray)
