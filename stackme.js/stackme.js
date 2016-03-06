@@ -1,57 +1,17 @@
-;(function(_, _defineProperty, _Stack){
-
-// Need some sort of stack structure.
-// Similar to datastruct.js/stack.js version 1.0.0.
-if(_Stack === undefined) _Stack = function() {
-    var 
-        _array   = {},
-        _depth   = 0,
-        _largest = 0;
-
-    _defineProperty(this, "push", { value: function push(entry) {
-        _array[_depth] = entry;
-        if(_depth === _largest && (++_largest))
-            (function(pos){_defineProperty(this, pos, { 
-                get: function() {
-                    return _array[_depth - pos - 1];
-                }, 
-                set: function(v) {
-                    _array[_depth - pos - 1] = v;
-                },
-                enumerable: true 
-            })})(_depth);
-        // Returns what was just pushed on.
-        return _array[_depth++]
-    }});
-    
-    _defineProperty(this, "pop", { value: function pop() {
-        if(_depth < 1) return null;
-        var popped = _array[--_depth];
-        delete _array[_depth];
-        return popped;
-    }});    
-
-    _defineProperty(this, "depth", { get: function() { return _depth; }});
-
-    _defineProperty(this, "copy", { value: function() {
-        var stack = new Stack();
-        for(var i = 0; i < _depth; ++i)
-            stack.push(_array[i])
-        return stack;
-    }});
-}
+;(function(global, g_defhidden, g_defprop, g_stack){
 
 // The stack that stackme.js will keep track of.
-var _the_stack = new _Stack();
+var _the_stack = new g_stack();
 
 function _Entry(obj) {
-    var me      = this;
+    var me = this;
 
-    _defineProperty(me, "ln",     { value: obj.ln     });
-    _defineProperty(me, "col",    { value: obj.col    });
-    _defineProperty(me, "method", { value: obj.method });
-    _defineProperty(me, "file",   { value: obj.file   });
-}
+    g_defprop(me, "string", obj.string);
+    g_defprop(me, "ln",     obj.ln);
+    g_defprop(me, "col",    obj.col);
+    g_defprop(me, "method", obj.method);
+    g_defprop(me, "file",   obj.file);
+};
 
 // Need to revamp to support functions with no name...
 
@@ -81,6 +41,7 @@ function _update_stack(offset) {
         // Gets the ln and col number.
         var cap = _all_regex.exec(string_stack[i]);
         // Makes sure that cap was actually there.
+        entry.string = string_stack[i];
         entry.method = cap ? cap[1] : "anomonous";
         entry.file   = cap ? cap[2] : "unknown";
         entry.ln     = cap ? cap[3] : -1;
@@ -96,10 +57,20 @@ function _get_stack() {
 
 var stackme = { stack: _the_stack };
 
-_defineProperty(stackme, "update", { get: _get_stack });
+g_defprop(stackme, "update", _get_stack );
 
-_defineProperty(stackme, "VERSION", { value: "1.0.0"});
+g_defhidden(stackme, "__version__", "1.0.0");
 
-_defineProperty(_, "stackme", { value: stackme });
+g_defprop(_, "stackme", stackme);
 
-})(this, Object.defineProperty, Stack)
+})(this, 
+    Object.defineProperty ?
+    function(object, prop, value) { Object.defineProperty(object, prop, {value:value}) }
+    :
+    function(object, prop, value) { object[prop] = value }
+,
+   Object.defineProperty ?
+    function(object, prop, value) { Object.defineProperty(object, prop, {value:value, enumerable:true}) }
+    :
+    function(object, prop, value) { object[prop] = value }
+, Stack)
