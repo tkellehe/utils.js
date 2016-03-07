@@ -5,78 +5,78 @@ function is_obj(obj) { return !is_func(obj) && obj instanceof Object }
 function can_attach(obj) { return obj instanceof Object }
 function to_string(obj) { return ((obj instanceof Object) ? obj.toString() : obj) + "" }
 
-function _add_onevent(onevent, obj, eventer) {
-    if(obj.hasOwnProperty(onevent))
+function _add_onevent(onevent, eventHandler, eventType) {
+    if(eventHandler.hasOwnProperty(onevent))
     {
-        if(!is_func(obj[onevent]))
+        if(!is_func(eventHandler[onevent]))
         {
-            try{ delete obj[onevent] }
-            catch(e) { throw new Error("Cannot not attach event: " + onevent) }
+            try{ delete eventHandler[onevent] }
+            catch(e) { throw new Error("Cannot attach event: " + onevent) }
         }
         else
         {
-            return obj;
+            return eventHandler;
         }
     }
 
-    g_defprop(obj, onevent, function() {
-        var event_instance = new eventer();
-        for(var i = 0, l = obj[onevent].__events__.length(); i < l; ++i)
+    g_defprop(eventHandler, onevent, function() {
+        var event_instance = new eventType();
+        for(var i = 0, l = eventHandler[onevent].__events__.length(); i < l; ++i)
         {
-            obj[onevent].__events__[i](event_instance);
+            eventHandler[onevent].__events__[i](event_instance);
         }
     });
-    g_defhidden(obj[onevent], "__events__", new g_simplearray());
+    g_defhidden(eventHandler[onevent], "__events__", new g_simplearray());
 }
 
-function _add_addEventListener(onevent, obj) {
-    if(obj.hasOwnProperty("addEventListener"))
+function _add_addEventListener(eventHandler) {
+    if(eventHandler.hasOwnProperty("addEventListener"))
     {
-        if(!is_func(obj.addEventListener))
+        if(!is_func(eventHandler.addEventListener))
         {
-            try{ delete obj.addEventListener }
-            catch(e) { throw new Error("Cannot not attach event: " + onevent) }
+            try{ delete eventHandler.addEventListener }
+            catch(e) { throw new Error("Cannot attach event addEventListener.") }
         }
         else
         {
-            return obj;
+            return eventHandler;
         }
     }
-    g_defprop(obj, "addEventListener", function(oe, f) {
-        if(is_func(f) && obj.hasOwnProperty(oe = to_string(oe)) 
-            && is_func(obj[oe]) && obj[oe].hasOwnProperty("__events__"))
+    g_defprop(eventHandler, "addEventListener", function(onevent, f) {
+        if(is_func(f) && eventHandler.hasOwnProperty(onevent = to_string(onevent)) 
+            && is_func(eventHandler[onevent]) && eventHandler[onevent].hasOwnProperty("__events__"))
         {
-            for(var i = 0, l = obj[oe].__events__.length(); i < l; ++i)
+            for(var i = 0, l = eventHandler[onevent].__events__.length(); i < l; ++i)
             {
-                if(obj[oe].__events__[i] === f)
+                if(eventHandler[onevent].__events__[i] === f)
                     return f;
             }
-            obj[oe].__events__.push(f);            
+            eventHandler[onevent].__events__.push(f);            
         }
         return f;
     });
 }
-function _add_removeEventListener(onevent, obj) {
-    if(obj.hasOwnProperty("removeEventListener"))
+function _add_removeEventListener(eventHandler) {
+    if(eventHandler.hasOwnProperty("removeEventListener"))
     {
-        if(!is_func(obj.removeEventListener))
+        if(!is_func(eventHandler.removeEventListener))
         {
-            try{ delete obj.removeEventListener }
-            catch(e) { throw new Error("Cannot not attach event: " + onevent) }
+            try{ delete eventHandler.removeEventListener }
+            catch(e) { throw new Error("Cannot attach removeEventListener.") }
         }
         else
         {
-            return obj;
+            return eventHandler;
         }
     }
-    g_defprop(obj, "removeEventListener", function(oe, f) {
-        if(is_func(f) && obj.hasOwnProperty(oe = to_string(oe)) 
-            && is_func(obj[oe]) && obj[oe].hasOwnProperty("__events__"))
+    g_defprop(eventHandler, "removeEventListener", function(onevent, f) {
+        if(is_func(f) && eventHandler.hasOwnProperty(onevent = to_string(onevent)) 
+            && is_func(eventHandler[onevent]) && eventHandler[onevent].hasOwnProperty("__events__"))
         {
-            for(var i = 0, l = obj[oe].__events__.length(); i < l; ++i)
+            for(var i = 0, l = eventHandler[onevent].__events__.length(); i < l; ++i)
             {
-                if(obj[oe].__events__[i] === f) {
-                    obj[oe].__events__.remove(i);
+                if(eventHandler[onevent].__events__[i] === f) {
+                    eventHandler[onevent].__events__.remove(i);
                     return f;
                 }
             }
@@ -88,48 +88,54 @@ function _add_removeEventListener(onevent, obj) {
 /**
  * var data = onlistener([String], [Object] [, EventMaker])
  * 
+ * @param eventHandler     : The Object to attach the listeners to.
  * @param event   : The name of the event to attach. Note: Will be attached as on + event.
- * @param obj     : The Object to attach the listeners to.
- * @param eventer : The object created for a particular event. If not provided, one will be created
+ * @param eventType : The object created for a particular event. If not provided, one will be created
  *                  with basic plugin capabilites.
  *
- * @return Returns an object containing onevent function, object, add/remove event listener, and the eventer.
+ * @return Returns an object containing onevent function, object, add/remove event listener, and the eventType.
  */
-function onlistener(event, obj, eventer) {
-    if(can_attach(obj))
+function onlistener(eventHandler, event, eventType) {
+    if(can_attach(eventHandler))
     {
-        var onevent = "on" + (event = to_string(event));
+        if(event !== undefined)
+            var onevent = "on" + (event = to_string(event));
 
-        // Makes own eventer object.
-        if(!is_func(eventer)) {
-            eventer = eval("(function(){return function " 
+        // Makes own eventType object.
+        if(onevent && !is_func(eventType)) {
+            eventType = eval("(function(){return function " 
                             + event + "Event(){var self = this;" 
                             + event + "Event.plugin.__plugin__(self);}})()");
-            g_defprop(eventer, "plugin", function(f){
+            g_defprop(eventType, "plugin", function(f){
                 if(is_func(f))
                 {
-                    eventer.plugin.__plugin__.plugins.push(f);
+                    eventType.plugin.__plugin__.plugins.push(f);
                 }
-                return eventer.plugin;
+                return eventType.plugin;
             });
-            g_defhidden(eventer.plugin, "__plugin__", function(instance){
-                for(var i = 0, l = eventer.plugin.__plugin__.plugins.length(); i < l; ++i)
-                    eventer.plugin.__plugin__.plugins[i](instance);
+            g_defhidden(eventType.plugin, "__plugin__", function(instance){
+                for(var i = 0, l = eventType.plugin.__plugin__.plugins.length(); i < l; ++i)
+                    eventType.plugin.__plugin__.plugins[i](instance);
             });
-            g_defprop(eventer.plugin.__plugin__, "plugins", new g_simplearray());
+            g_defprop(eventType.plugin.__plugin__, "plugins", new g_simplearray());
         }
 
-        _add_onevent(onevent, obj, eventer);
-        _add_addEventListener(onevent, obj);
-        _add_removeEventListener(onevent, obj);
+        if(onevent) _add_onevent(onevent, eventHandler, eventType);
+        _add_addEventListener(eventHandler);
+        _add_removeEventListener(eventHandler);
 
         var result = {};
-        result[onevent] = obj[onevent];
-        result.addEventListener = obj.addEventListener;
-        result.removeEventListener = obj.removeEventListener;
-        result.eventer = eventer;
-        result.eventHandler = obj;
-        result.plugin = eventer.plugin;
+        if(onevent)
+        {
+            result.onevent = onevent;
+            result[onevent] = eventHandler[onevent];
+            result.eventType = eventType;
+            result.plugin = eventType.plugin;
+        }
+        
+        result.addEventListener = eventHandler.addEventListener;
+        result.removeEventListener = eventHandler.removeEventListener;
+        result.eventHandler = eventHandler;
     }
 
     return result;
