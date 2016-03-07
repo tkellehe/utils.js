@@ -23,13 +23,13 @@ function SimpleStack() {
 
     _defineProperty(me, "copy", { value: function() {
         var stack = new SimpleStack();
-        for(var i = 0; i < _depth; ++i)
-            stack.push(_array[i])
+        // Push on backwards such that stack copied looks correct.
+        for(var i = _depth; i--;) stack.push(_array[i])
         return stack;
     }});
 }
 
-_defineProperty(SimpleStack, "VERSION", { value: "1.0.0" });
+_defineProperty(SimpleStack, "__version__", { value: "1.0.0" });
 
 _defineProperty(_, "SimpleStack", { value: SimpleStack });
 

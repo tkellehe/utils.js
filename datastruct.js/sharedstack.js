@@ -32,7 +32,7 @@ function SharedStack(array) {
     }});
 }
 
-_defineProperty(SharedStack, "VERSION", { value: "1.0.0" });
+_defineProperty(SharedStack, "__version__", { value: "1.0.0" });
 
 _defineProperty(_, "SharedStack", { value: SharedStack });
 

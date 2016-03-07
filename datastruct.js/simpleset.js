@@ -43,5 +43,4 @@ g_defprop(global, "SimpleSet", SimpleSet);
     function(object, prop, value) { Object.defineProperty(object, prop, {value:value, enumerable:true}) }
     :
     function(object, prop, value) { object[prop] = value }
-
 )

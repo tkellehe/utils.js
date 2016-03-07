@@ -61,7 +61,7 @@ _defineProperty(StopWatch, "Clock", { value: function(f, unit) {
     return stopwatch.span(unit);
 }});
 
-_defineProperty(StopWatch, "VERSION", { value: "1.0.0" });
+_defineProperty(StopWatch, "__version__", { value: "1.0.0" });
 
 _defineProperty(_, "StopWatch", { value: StopWatch });
 

@@ -34,14 +34,14 @@ function Stack() {
     _defineProperty(me, "depth", { get: function() { return _depth; }});
 
     _defineProperty(me, "copy", { value: function() {
-        var stack = new Stack();
-        for(var i = 0; i < _depth; ++i)
-            stack.push(_array[i])
+        var stack = new SimpleStack();
+        // Push on backwards such that stack copied looks correct.
+        for(var i = _depth; i--;) stack.push(_array[i])
         return stack;
     }});
 }
 
-_defineProperty(Stack, "VERSION", { value: "1.0.0" });
+_defineProperty(Stack, "__version__", { value: "1.0.0" });
 
 _defineProperty(_, "Stack", { value: Stack });
 
