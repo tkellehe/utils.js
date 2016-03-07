@@ -33,7 +33,7 @@ eventInfo = onlistener(eventHandler, "event");
 console.log(eventInfo.eventType); // => function eventEvent() { ... }
 // Now can add an event and trigger it!
 function foo(event) { console.log(event) }
-eventHandler.addEventListener("onevent", foo);
+eventHandler.addEventListener("event", foo);
 eventHandler.onevent(); // => displays and eventEvent object.
 // Then can remove the function.
 eventHandler.removeEventListener("onevent", foo);
@@ -62,7 +62,7 @@ var element = document.getElementById("element");
 // Creates the object that listens to the "any" key.
 var any = keys("any", element);
 // Attaches the Key instance to the object then adds an onkeydown event.
-any.attach().onkeydown(function(){ console.log("down") });
+any.attach().on("keydown",function(){ console.log("down") });
 // When done, just detach!
 any.detach();
 ```
@@ -76,3 +76,7 @@ __keys.js__ relies on __simplearray.js__ which is a basic array class used inter
 [simplearray.js](http://tkellehe.github.io/utils.js/datastruct.js/simplearray.js) [2.54 KB]
 
 [simplearray.compressed.js](http://tkellehe.github.io/utils.js/datastruct.js/simplearray.compressed.js) [1.02 KB]
+
+__keys.js__ also relies on __onlistener.js__ for making objects have event listeners.
+
+[onlistener.js](http://tkellehe.github.io/utils.js/onlistener.js/onlistener.js)
