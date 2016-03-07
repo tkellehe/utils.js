@@ -1,4 +1,4 @@
-(function(global, g_defhidden, g_defprop, g_doc, g_simplearray) {
+(function(global, g_defhidden, g_defprop, g_doc, g_simplearray, g_onlistener) {
 /**
  * keys([KEY | SHORT | CODE] [, ELEMENT])
  * 
@@ -16,33 +16,39 @@ function keys(key, element) {
         code = keys.tocode(key);
     }
 
-    return new Key(keys.tokey(code), code, ((element instanceof Object) ? element : g_doc));
+    // Makes sure that element has add/remove event listeners.
+    element = g_onlistener(element);
+
+    // Makes sure there is an onkeydown and onkeyup.
+    if(element) 
+    {
+        element = element.eventHandler;
+        element = g_onlistener(element, "keydown", GetAKeyboardEvent);
+        if(element && element.onkeydown)
+        {
+            element = element.eventHandler;
+            element = g_onlistener(element, "keyup", GetAKeyboardEvent);
+            if(!(element && element.onkeyup))
+                element = g_doc;
+        }
+        else
+            element = g_doc;
+    }
+    else
+        element = g_doc;
+
+    return new Key(keys.tokey(code), code, element);
 }
 // Stores all of the classes used in keys.js.
 g_defhidden(keys, "__classes__", {});
-
-//============================================================================================================
-// Helpful functions.
-//============================================================================================================
-// A function used for shortening the character count when detecting when something is a function.
-function is_function(obj) { return obj instanceof Function };
-
-// Creates a function that can attach event handlers to elements.
-function __make_element_event_adder__(event, element) {
-    return is_function(element.addEventListener) ? 
-                function(f) { element.addEventListener(event, f) }
-            :
-                ((event = "on" + event) && function(f) { element[event] = f })
-};
-// Creates a function that can detach event handlers to elements.
-function __make_element_event_remover__(event, element) {
-    return is_function(element.removeEventListener) ? 
-                function(f) { element.removeEventListener(event, f) }
-            :
-                ((event = "on" + event) && function(f) { if(element[event] === f) delete element[event] })
-};
-
 keys.__classes__.SimpleArray = g_simplearray;
+
+function GetAKeyboardEvent() {
+    for(var i in keys.__event_data__) break;
+    return i ? keys.__event_data__[i] : {which: -1};
+}
+
+function is_function(obj) { return obj instanceof Function }
 
 //============================================================================================================
 // Actual library.
@@ -55,6 +61,7 @@ g_defhidden(keys, "__short_to_key_code__", {});
 
 // Used for detecting general keyboard events.
 g_defhidden(keys, "__raw_data__", {});
+g_defhidden(keys, "__event_data__", {});
 
 // Handles plugin calls.
 g_defhidden(keys, "__plugins__", {
@@ -110,18 +117,18 @@ function Key(key, code, elem) {
         isdown: false,
         ispressed: false,
         kevent_down: undefined,
-        kevent_pressed: undefined,
+        kevent_press: undefined,
         kevent_up: undefined,
         events_down: new g_simplearray(),
         events_pressed: new g_simplearray(),
         events_up: new g_simplearray()
     };
-    
-    // Used for connecting and disconnecting to the element.
-    var _keydown_element_adder   = __make_element_event_adder__  ("keydown", _members.__element__),
-        _keydown_element_remover = __make_element_event_remover__("keydown", _members.__element__),
-        _keyup_element_adder   = __make_element_event_adder__  ("keyup", _members.__element__),
-        _keyup_element_remover = __make_element_event_remover__("keyup", _members.__element__);
+
+    // Added the add/remove event listeners.
+    g_onlistener(_members.__self__);
+    g_onlistener(_members.__self__, "keydown", KeyEvent);
+    g_onlistener(_members.__self__, "keypress", KeyEvent);
+    g_onlistener(_members.__self__, "keyup", KeyEvent);
     
     // The event actually connected to the keydown and invokes all of the registered events to the key.
     var _keydown_event = _members.code === -1 ?
@@ -130,14 +137,14 @@ function Key(key, code, elem) {
         var keyevent = new KeyEvent(_members, event);
         if(_members.isdown) {
             _members.ispressed = true;
-            _members.kevent_pressed = keyevent;
+            _members.kevent_press = keyevent;
             keyevent.type = "keypress";
-            _members.events_pressed.forloop(function(_, i){i.apply(_members.__self__, [_members.kevent_pressed])});
+            _members.__self__.onkeypress(_members.kevent_press);
         } else {
             _members.isdown = true;
             _members.kevent_down = keyevent;
             keyevent.type = "keydown";
-            _members.events_down.forloop(function(_, i){i.apply(_members.__self__, [_members.kevent_down])});
+            _members.__self__.onkeydown(_members.kevent_down);
         }
     }
 
@@ -148,14 +155,14 @@ function Key(key, code, elem) {
         if(keyevent.code == code) {
             if(_members.isdown) {
                 _members.ispressed = true;
-                _members.kevent_pressed = keyevent;
+                _members.kevent_press = keyevent;
                 keyevent.type = "keypress";
-                _members.events_pressed.forloop(function(_, i){i.apply(_members.__self__, [_members.kevent_pressed])});
+                _members.__self__.onkeypress(_members.kevent_press);
             } else {
                 _members.isdown = true;
                 _members.kevent_down = keyevent;
                 keyevent.type = "keydown";
-                _members.events_down.forloop(function(_, i){i.apply(_members.__self__, [_members.kevent_down])});
+                _members.__self__.onkeydown(_members.kevent_down);
             }
         }
     };
@@ -169,7 +176,7 @@ function Key(key, code, elem) {
         _members.ispressed = false;
         _members.kevent_up = keyevent;
         keyevent.type = "keyup";
-        _members.events_up.forloop(function(_, i){i.apply(_members.__self__, [_members.kevent_up])});
+        _members.__self__.onkeyup(_members.kevent_up);
     }
 
     :
@@ -181,15 +188,15 @@ function Key(key, code, elem) {
             _members.ispressed = false;
             _members.kevent_up = keyevent;
             keyevent.type = "keyup";
-            _members.events_up.forloop(function(_, i){i.apply(_members.__self__, [_members.kevent_up])});
+            _members.__self__.onkeyup(_members.kevent_up);
         }
     };
         
     g_defprop(_members.__self__, "attach",
         function() {
             if(!_members.isattached) {
-                _keydown_element_adder(_keydown_event);
-                _keyup_element_adder(_keyup_event);
+                _members.__element__.addEventListener("onkeydown", _keydown_event);
+                _members.__element__.addEventListener("onkeyup", _keyup_event);
                 _members.isattached = true;
             }
             return _members.__self__; 
@@ -197,8 +204,8 @@ function Key(key, code, elem) {
     g_defprop(_members.__self__, "detach",
         function() {
             if(_members.isattached) {
-                _keydown_element_remover(_keydown_event);
-                _keyup_element_remover(_keyup_event);
+                _members.__element__.removeEventListener("onkeydown", _keydown_event);
+                _members.__element__.removeEventListener("onkeyup", _keyup_event);
                 _members.isattached = false;
             }
             return _members.__self__;
@@ -213,106 +220,10 @@ function Key(key, code, elem) {
     g_defprop(_members.__self__, "ispressed", function() { return _members.ispressed });
     g_defprop(_members.__self__, "isup", function() { return !_members.isdown });
     
-    function onkeydown(f) {
-        if(is_function(f)) {
-            onkeydown.remove();
-            _members.events_down.push(f);
-        }
-        return _members.__self__;
-    };
-    g_defprop(onkeydown, "add", function(f) {
-        if(is_function(f)) {
-            for(var i in _members.events_down) 
-                if(f === _members.events_down[i])
-                    return _members.__self__;
-            _members.events_down.push(f);
-        }
+    g_defprop(_members.__self__, "on", function on(event, f){
+        _members.addEventListener(event, f);
         return _members.__self__;
     });
-    g_defprop(onkeydown, "remove", function(f) {
-        if(f === undefined) {
-            _members.events_down.clear()
-        }
-        else if(is_function(f)) {
-            for(var i = _members.events_down.length(); i--;) {
-                if(_members.events_down[i] === f) {
-                    delete _members.events_down[i];
-                    _members.events_down.resize();
-                    break;
-                }
-            }
-        }
-        return _members.__self__;
-    });
-    g_defprop(_members.__self__, "onkeydown", onkeydown);
-    
-    function onkeypress(f) {
-        if(is_function(f)) {
-            onkeypress.remove();
-            _members.events_pressed.push(f);
-        }
-        return _members.__self__;
-    };
-    g_defprop(onkeypress, "add", function(f) {
-        if(is_function(f)) {
-            for(var i in _members.events_pressed) 
-                if(f === _members.events_pressed[i])
-                    return _members.__self__;
-            _members.events_pressed.push(f);
-        }
-        return _members.__self__;
-    });
-    g_defprop(onkeypress, "remove", function(f) {
-        if(f === undefined) {
-            _members.events_pressed.clear()
-        }
-        else if(is_function(f)) {
-            for(var i = _members.events_pressed.length(); i--;) {
-                if(_members.events_pressed[i] === f) {
-                    delete _members.events_pressed[i];
-                    _members.events_pressed.resize();
-                    break;
-                }
-            }
-        }
-        return _members.__self__;
-    });
-    g_defprop(_members.__self__, "onkeypress", onkeypress);
-    
-    function onkeyup(f) {
-        if(is_function(f)) {
-            onkeyup.remove();
-            _members.events_up.push(f);
-        }
-        return _members.__self__;
-    };
-    
-    g_defprop(onkeyup, "add", function(f) {
-        if(is_function(f)) {
-            for(var i in _members.events_up) 
-                if(f === _members.events_up[i])
-                    return _members.__self__;
-            _members.events_up.push(f);
-        }
-        return _members.__self__;
-    });
-    g_defprop(onkeyup, "remove", function(f) {
-        if(f === undefined) {
-            _members.events_up.clear()
-        }
-        else if(is_function(f)) {
-            for(var i = _members.events_up.length(); i--;) {
-                if(_members.events_up[i] === f) {
-                    delete _members.events_up[i];
-                    _members.events_up.resize();
-                    break;
-                }
-            }
-        }
-        return _members.__self__;
-    });
-    
-    g_defprop(_members.__self__, "onkeyup", onkeyup);
 
     keys.__plugins__.__process_plugins_on__(keys.__plugins__.__key_plugins__, _members);
 };
@@ -546,19 +457,19 @@ for(var keyCode in keys.__key_code_to_short__)
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
 // Used for general data collection.
+g_doc = (g_onlistener(g_doc).eventHandler);
 
-var add_to_keydown_document = __make_element_event_adder__("keydown", g_doc),
-    add_to_keyup_document   = __make_element_event_adder__("keyup", g_doc)
-
-add_to_keydown_document(function(event){
+g_doc.addEventListener("keydown", function(event){
     var code = event.which || event.keyCode;
+    keys.__event_data__[code] = event;
     if(!keys.__raw_data__[code])
         keys.__raw_data__[code] = 1;
     else
         keys.__raw_data__[code] = 2;
 });
-add_to_keyup_document(function(event){
+g_doc.addEventListener("keyup", function(event){
     var code = event.which || event.keyCode;
+    delete keys.__event_data__[code];
     delete keys.__raw_data__[code];
 });
 
@@ -636,4 +547,5 @@ g_defprop(global, "keys", keys);
     function(object, prop, value) { object[prop] = value }
 
 , document
-, SimpleArray)
+, SimpleArray
+, onlistener)
