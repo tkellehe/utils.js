@@ -1,1 +1,1 @@
-(function(e,t,n){function u(){var e=this;t(e,"valueOf",{value:function(){return 0/0}}),t(e,"VERSION",{value:"1.0.0"})}t(e,"nullptr",{value:n(new u)})}).call(this,this,Object.defineProperty,Object.freeze);
+(function(n,e,t){function u(){var n=this;e(n,"valueOf",{value:function(){return NaN}}),e(n,"toString",{value:function(){return"nullptr"}}),e(n,"__version__",{value:"1.0.0"})}e(n,"nullptr",{value:t(new u)})}).call(this,Object.defineProperty||function(n,e,t){n[e]=t.value},Object.freeze||function(n){return n});
