@@ -36,7 +36,7 @@ function foo(event) { console.log(event) }
 eventHandler.addEventListener("event", foo);
 eventHandler.onevent(); // => displays and eventEvent object.
 // Then can remove the function.
-eventHandler.removeEventListener("onevent", foo);
+eventHandler.removeEventListener("event", foo);
 eventHandler.onevent(); // => No events are invoked.
 ```
 
