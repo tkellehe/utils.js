@@ -6,7 +6,7 @@ function can_attach(obj) { return obj instanceof Object }
 function to_string(obj) { return ((obj instanceof Object) ? obj.toString() : obj) + "" }
 
 function _add_onevent(onevent, eventHandler, eventType) {
-    if(eventHandler.hasOwnProperty(onevent))
+    if(onevent in eventHandler)
     {
         if(!is_func(eventHandler[onevent]))
         {
@@ -15,22 +15,22 @@ function _add_onevent(onevent, eventHandler, eventType) {
         }
         else
         {
-            return eventHandler;
+            return;
         }
     }
 
-    g_defprop(eventHandler, onevent, function() {
-        var event_instance = new eventType();
+    g_defprop(eventHandler, onevent, function(event_instance) {
+        if(!(event_instance instanceof eventType)) event_instance = new eventType();
         for(var i = 0, l = eventHandler[onevent].__events__.length(); i < l; ++i)
         {
-            eventHandler[onevent].__events__[i](event_instance);
+            eventHandler[onevent].__events__[i].apply(eventHandler, [event_instance]);
         }
     });
     g_defhidden(eventHandler[onevent], "__events__", new g_simplearray());
 }
 
 function _add_addEventListener(eventHandler) {
-    if(eventHandler.hasOwnProperty("addEventListener"))
+    if("addEventListener" in eventHandler)
     {
         if(!is_func(eventHandler.addEventListener))
         {
@@ -39,12 +39,13 @@ function _add_addEventListener(eventHandler) {
         }
         else
         {
-            return eventHandler;
+            return;
         }
     }
-    g_defprop(eventHandler, "addEventListener", function(onevent, f) {
-        if(is_func(f) && eventHandler.hasOwnProperty(onevent = to_string(onevent)) 
-            && is_func(eventHandler[onevent]) && eventHandler[onevent].hasOwnProperty("__events__"))
+    g_defprop(eventHandler, "addEventListener", function(event, f) {
+        var onevent = "on" + to_string(event);
+        if(is_func(f) && (onevent in eventHandler)
+            && is_func(eventHandler[onevent]) && ("__events__" in eventHandler[onevent]))
         {
             for(var i = 0, l = eventHandler[onevent].__events__.length(); i < l; ++i)
             {
@@ -57,7 +58,7 @@ function _add_addEventListener(eventHandler) {
     });
 }
 function _add_removeEventListener(eventHandler) {
-    if(eventHandler.hasOwnProperty("removeEventListener"))
+    if("removeEventListener" in eventHandler)
     {
         if(!is_func(eventHandler.removeEventListener))
         {
@@ -66,12 +67,13 @@ function _add_removeEventListener(eventHandler) {
         }
         else
         {
-            return eventHandler;
+            return;
         }
     }
     g_defprop(eventHandler, "removeEventListener", function(onevent, f) {
-        if(is_func(f) && eventHandler.hasOwnProperty(onevent = to_string(onevent)) 
-            && is_func(eventHandler[onevent]) && eventHandler[onevent].hasOwnProperty("__events__"))
+        var onevent = "on" + to_string(event);
+        if(is_func(f) && (onevent in eventHandler)
+            && is_func(eventHandler[onevent]) && ("__events__" in eventHandler[onevent]))
         {
             for(var i = 0, l = eventHandler[onevent].__events__.length(); i < l; ++i)
             {
