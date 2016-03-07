@@ -104,8 +104,8 @@ function onlistener(eventHandler, event, eventType) {
         // Makes own eventType object.
         if(onevent && !is_func(eventType)) {
             eventType = eval("(function(){return function " 
-                            + event + "Event(){var self = this;" 
-                            + event + "Event.plugin.__plugin__(self);}})()");
+                            + event + "Event(){var m = {__self__: this};" 
+                            + event + "Event.plugin.__plugin__(m);}})()");
             g_defprop(eventType, "plugin", function(f){
                 if(is_func(f))
                 {

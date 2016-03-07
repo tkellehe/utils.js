@@ -58,6 +58,7 @@ g_defhidden(keys, "__raw_data__", {});
 
 // Handles plugin calls.
 g_defhidden(keys, "__plugins__", {
+    // Passing in using members allows for shared "private" members.
     __process_plugins_on__: function(plugins, members) { 
         plugins.forloop(function(i, plugin) { plugin(members); });
     },
