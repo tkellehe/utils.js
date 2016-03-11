@@ -195,8 +195,8 @@ function Key(key, code, elem) {
     g_defprop(_members.__self__, "attach",
         function() {
             if(!_members.isattached) {
-                _members.__element__.addEventListener("onkeydown", _keydown_event);
-                _members.__element__.addEventListener("onkeyup", _keyup_event);
+                _members.__element__.addEventListener("keydown", _keydown_event);
+                _members.__element__.addEventListener("keyup", _keyup_event);
                 _members.isattached = true;
             }
             return _members.__self__; 
@@ -204,8 +204,8 @@ function Key(key, code, elem) {
     g_defprop(_members.__self__, "detach",
         function() {
             if(_members.isattached) {
-                _members.__element__.removeEventListener("onkeydown", _keydown_event);
-                _members.__element__.removeEventListener("onkeyup", _keyup_event);
+                _members.__element__.removeEventListener("keydown", _keydown_event);
+                _members.__element__.removeEventListener("keyup", _keyup_event);
                 _members.isattached = false;
             }
             return _members.__self__;
@@ -221,7 +221,7 @@ function Key(key, code, elem) {
     g_defprop(_members.__self__, "isup", function() { return !_members.isdown });
     
     g_defprop(_members.__self__, "on", function on(event, f){
-        _members.addEventListener(event, f);
+        _members.__self__.addEventListener(event, f);
         return _members.__self__;
     });
 
@@ -457,21 +457,23 @@ for(var keyCode in keys.__key_code_to_short__)
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
 // Used for general data collection.
-g_doc = (g_onlistener(g_doc).eventHandler);
+if(g_doc && is_function(g_doc.addEventListener))
+{
+    g_doc.addEventListener("keydown", function(event){
+        var code = event.which || event.keyCode;
+        keys.__event_data__[code] = event;
+        if(!keys.__raw_data__[code])
+            keys.__raw_data__[code] = 1;
+        else
+            keys.__raw_data__[code] = 2;
+    });
+    g_doc.addEventListener("keyup", function(event){
+        var code = event.which || event.keyCode;
+        delete keys.__event_data__[code];
+        delete keys.__raw_data__[code];
+    });
+}
 
-g_doc.addEventListener("keydown", function(event){
-    var code = event.which || event.keyCode;
-    keys.__event_data__[code] = event;
-    if(!keys.__raw_data__[code])
-        keys.__raw_data__[code] = 1;
-    else
-        keys.__raw_data__[code] = 2;
-});
-g_doc.addEventListener("keyup", function(event){
-    var code = event.which || event.keyCode;
-    delete keys.__event_data__[code];
-    delete keys.__raw_data__[code];
-});
 
 //------------------------------------------------------------------------------------------------------------
 // Utility functions
