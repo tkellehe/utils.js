@@ -58,14 +58,4 @@ g_defprop(SimpleArray.prototype, "forloop", function(f) {
 g_defhidden(SimpleArray, "__version__" , "1.0.0" );
 g_defprop(global, "SimpleArray", SimpleArray);
 
-})(this, 
-    Object.defineProperty ?
-    function(object, prop, value) { Object.defineProperty(object, prop, {value:value}) }
-    :
-    function(object, prop, value) { object[prop] = value }
-,
-   Object.defineProperty ?
-    function(object, prop, value) { Object.defineProperty(object, prop, {value:value, enumerable:true}) }
-    :
-    function(object, prop, value) { object[prop] = value }
-)
+})(this, polyfill.defhidden, polyfill.defprop)

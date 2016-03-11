@@ -147,15 +147,4 @@ g_defhidden(onlistener, "__version__", "1.0.0")
 
 g_defprop(global, "onlistener", onlistener);
 
-})(this,
-    Object.defineProperty ?
-    function(object, prop, value) { Object.defineProperty(object, prop, {value:value}) }
-    :
-    function(object, prop, value) { object[prop] = value }
-,
-    Object.defineProperty ?
-    function(object, prop, value) { Object.defineProperty(object, prop, {value:value, enumerable:true}) }
-    :
-    function(object, prop, value) { object[prop] = value }
-, SimpleArray
-)
+})(this, polyfill.defhidden, polyfill.defprop, SimpleArray)

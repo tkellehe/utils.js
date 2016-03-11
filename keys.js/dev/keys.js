@@ -537,17 +537,4 @@ g_defprop(global, "keys", keys);
 // Start Utilities for general use.
 //============================================================================================================
 
-})(this, 
-    Object.defineProperty ?
-    function(object, prop, value) { Object.defineProperty(object, prop, {value:value}) }
-    :
-    function(object, prop, value) { object[prop] = value }
-,
-   Object.defineProperty ?
-    function(object, prop, value) { Object.defineProperty(object, prop, {value:value, enumerable:true}) }
-    :
-    function(object, prop, value) { object[prop] = value }
-
-, document
-, SimpleArray
-, onlistener)
+})(this, polyfill.defprop, polyfill.defhidden, document, SimpleArray, onlistener)
