@@ -1,6 +1,6 @@
 (function(global, pfill){
 
-var ua = pfill.user_agent,
+var ua = pfill.browser.user_agent,
     temp;
 function version() {
     temp = ua.indexOf('MSIE ')
@@ -22,15 +22,15 @@ function version() {
         return +(ua.substring(temp + 5, ua.indexOf('.', temp)));
     }
 
+    // Failed to find anything.
     return -1;
 }
 
-var is_ie = {};
+if(!("detect" in pfill.browser)) pfill.defprop(pfill.browser, "detect", {});
+if(!("ie" in pfill.browser.detect)) pfill.defprop(pfill.browser.detect, "ie", {});
 
-defprop(is_ie, "version", version());
-defprop(is_ie, "check", version != -1);
-
-defprop(pfill, "is_ie", is_ie);
+pfill.defprop(pfill.browser.detect.ie, "version", version());
+pfill.defprop(pfill.browser.detect.ie, "check", version != -1);
 
 
 })(this, polyfill)
