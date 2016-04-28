@@ -6,6 +6,6 @@ function exception(message) {
 }
 exception.prototype = new Error;
 
-pfill.defprop(pfill.exception, "exception", exception);
+pfill.defprop(pfill, "exception", exception);
 
 })(this, polyfill)
