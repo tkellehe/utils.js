@@ -12,7 +12,8 @@ function SimpleArray() {
         _members.__self__.resize();
         _members.__self__[_members.length++] = element;
         return _members.__self__;
-    });g_defhidden(_members.__self__, "remove", function(i) {
+    });
+    g_defhidden(_members.__self__, "remove", function(i) {
         if(typeof i === "number" && 0 <= i && i <= _members.length)
         {
             delete _members.__self__[i];
