@@ -13,4 +13,4 @@ else
                         F[prop] = props[prop];
         return new F();
     })
-})(this, polyfill)
+})(this, this.polyfill)

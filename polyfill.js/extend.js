@@ -5,4 +5,4 @@ pfill.defprop(pfill, "extend", function extend(child, parent) {
     return child;
 })
 
-})(this, polyfill)
+})(this, this.polyfill)

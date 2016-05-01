@@ -3,13 +3,13 @@
 if(!("browser" in pfill)) pfill.defprop(pfill, "browser", {})
 if(!("detect" in pfill.browser)) pfill.defprop(pfill.browser, "detect", {});
 
-pfill.defprop(polyfill.browser.detect, "opera", {});
-pfill.defprop(polyfill.browser.detect, "fire_fox", {});
-pfill.defprop(polyfill.browser.detect, "safari", {});
-pfill.defprop(polyfill.browser.detect, "ie", {});
-pfill.defprop(polyfill.browser.detect, "edge", {});
-pfill.defprop(polyfill.browser.detect, "chrome", {});
-pfill.defprop(polyfill.browser.detect, "blink", {});
+pfill.defprop(pfill.browser.detect, "opera", {});
+pfill.defprop(pfill.browser.detect, "fire_fox", {});
+pfill.defprop(pfill.browser.detect, "safari", {});
+pfill.defprop(pfill.browser.detect, "ie", {});
+pfill.defprop(pfill.browser.detect, "edge", {});
+pfill.defprop(pfill.browser.detect, "chrome", {});
+pfill.defprop(pfill.browser.detect, "blink", {});
 
 // Pulled from http://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
 
@@ -28,12 +28,12 @@ var isChrome = !!window.chrome && !!window.chrome.webstore;
     // Blink engine detection
 var isBlink = (isChrome || isOpera) && !!window.CSS;
 
-pfill.defprop(polyfill.browser.detect.opera, "check", isOpera);
-pfill.defprop(polyfill.browser.detect.fire_fox, "check", isFirefox);
-pfill.defprop(polyfill.browser.detect.safari, "check", isSafari);
-pfill.defprop(polyfill.browser.detect.ie, "check", isIE);
-pfill.defprop(polyfill.browser.detect.edge, "check", isEdge);
-pfill.defprop(polyfill.browser.detect.chrome, "check", isChrome);
-pfill.defprop(polyfill.browser.detect.blink, "check", isBlink);
+pfill.defprop(pfill.browser.detect.opera, "check", isOpera);
+pfill.defprop(pfill.browser.detect.fire_fox, "check", isFirefox);
+pfill.defprop(pfill.browser.detect.safari, "check", isSafari);
+pfill.defprop(pfill.browser.detect.ie, "check", isIE);
+pfill.defprop(pfill.browser.detect.edge, "check", isEdge);
+pfill.defprop(pfill.browser.detect.chrome, "check", isChrome);
+pfill.defprop(pfill.browser.detect.blink, "check", isBlink);
 
-})(this, polyfill)
+})(this, this.polyfill)

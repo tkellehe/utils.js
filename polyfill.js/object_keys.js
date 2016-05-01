@@ -34,4 +34,4 @@ else
   })()
 );
 
-})(this, polyfill)
+})(this, this.polyfill)

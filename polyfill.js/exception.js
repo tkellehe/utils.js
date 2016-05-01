@@ -8,4 +8,4 @@ exception.prototype = new Error;
 
 pfill.defprop(pfill, "exception", exception);
 
-})(this, polyfill)
+})(this, this.polyfill)

@@ -2,4 +2,4 @@
 
 pfill.defprop(pfill, "is_null", function is_null(obj) { return obj === null })
 
-})(this, polyfill)
+})(this, this.polyfill)

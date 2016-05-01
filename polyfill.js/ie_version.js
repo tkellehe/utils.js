@@ -31,4 +31,4 @@ if(!("ie" in pfill.browser.detect)) pfill.defprop(pfill.browser.detect, "ie", {}
 
 pfill.defprop(pfill.browser.detect.ie, "version", version());
 
-})(this, polyfill)
+})(this, this.polyfill)
