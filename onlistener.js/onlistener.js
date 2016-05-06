@@ -88,7 +88,7 @@ function _add_removeEventListener(eventHandler) {
 }
 
 /**
- * var data = onlistener([String], [Object] [, EventMaker])
+ * var data = onlistener([Object] [, Object [, EventMaker]])
  * 
  * @param eventHandler     : The Object to attach the listeners to.
  * @param event   : The name of the event to attach. Note: Will be attached as on + event.
